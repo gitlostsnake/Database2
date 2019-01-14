@@ -195,3 +195,4 @@ def assigned_view():
 
 
 assigned_connect()
+
