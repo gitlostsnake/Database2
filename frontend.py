@@ -153,16 +153,26 @@ def message2_user():
     messagebox.showinfo("Advice", "Tough")
 
 
-def assign_to_job():
+def howmuchtaken():
+    Taken_text= StringVar()
+    messagebox.showinfo("Taken?", "Liam will find you. and kill you.")
+    return assign_item_job()
+
+
+def assign_item_job():
     backend.assigned_insert(selected_item[0], selected_roadworks[0])
     assigned_list.delete(0, END)
     for row in backend.assigned_view():
         assigned_list.insert(END, row)
 
 
+def assign_vehicle_job():
+    backend.assigned_insert
+
+
 # Main
 window = Tk()
-window.title("TM Organiser")
+window.title("Sorry about yesterday")
 
 # 2. BUTTONS WITH FUNCTIONS
 # Inventory Buttons
@@ -216,7 +226,7 @@ assign_vehicle_button= Button(window, text="Assign Vehicle", width=14)
 assign_vehicle_button.grid(row=13, column=0)
 
 assign_stock_button = Button(window, text="Assign Stock", width=14,
-                                command= assign_to_job)
+                                command= howmuchtaken)
 assign_stock_button.grid(row=14, column=0)
 
 # 3. SEARCH BAR
@@ -418,3 +428,4 @@ view_vehicles()
 
 
 window.mainloop()
+
