@@ -5,9 +5,9 @@ from datetime import datetime
 
 
 class Connect(object):
-
     """Connect to job, stock, vehicle and assigned stock tables"""
-    def job(self):
+    @staticmethod
+    def job():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS road_works
@@ -17,7 +17,8 @@ class Connect(object):
         conn.commit()
         conn.close()
 
-    def stock(self):
+    @staticmethod
+    def stock():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS stock_inventory
@@ -27,7 +28,8 @@ class Connect(object):
         conn.commit()
         conn.close()
 
-    def vehicle(self):
+    @staticmethod
+    def vehicle():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""
@@ -38,7 +40,8 @@ class Connect(object):
         conn.commit()
         conn.close()
 
-    def assigned_stock(self):
+    @staticmethod
+    def assigned_stock():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""
@@ -53,10 +56,27 @@ class Connect(object):
         conn.commit()
         conn.close()
 
+    @staticmethod
+    def additional():
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("""
+                    CREATE TABLE IF NOT EXISTS additional
+                    (job_id INTEGER,
+                    length INTEGER, 
+                    type TEXT, 
+                    crew_required INTEGER,
+                    FOREIGN KEY(job_id)
+                    REFERENCES road_works(id))
+                    """)
+        conn.commit()
+        conn.close()
+
 
 class insert(object):
     """Insert job, stock or vehicle"""
-    def job(self, location, client, start_date, end_date):
+    @staticmethod
+    def job(location, client, start_date, end_date):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("INSERT INTO road_works VALUES (NULL, ?,?,?,?)",
@@ -66,7 +86,8 @@ class insert(object):
         conn.commit()
         conn.close()
 
-    def stock(self, name, amount, weight, warning_level):
+    @staticmethod
+    def stock(name, amount, weight, warning_level):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("INSERT INTO stock_inventory VALUES (NULL, ?,?,?,?)",
@@ -74,7 +95,8 @@ class insert(object):
         conn.commit()
         conn.close()
 
-    def vehicle(self, fleet_no, registration_no, weight_limit):
+    @staticmethod
+    def vehicle(fleet_no, registration_no, weight_limit):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("INSERT INTO vehicles_inventory VALUES (NULL, ?,?,?)",
@@ -82,11 +104,21 @@ class insert(object):
         conn.commit()
         conn.close()
 
+    @staticmethod
+    def additional(job_id, length, type, crew_required):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("INSERT INTO additional VALUES (?,?,?)",
+                    (job_id, length, type, crew_required))
+        conn.commit()
+        conn.close()
+
 
 class view(object):
     """View job, stock, vehicle"""
 
-    def job(self):
+    @staticmethod
+    def job():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("SELECT * FROM road_works")
@@ -94,7 +126,8 @@ class view(object):
         conn.close()
         return rows
 
-    def stock(self):
+    @staticmethod
+    def stock():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("SELECT * FROM stock_inventory")
@@ -102,7 +135,8 @@ class view(object):
         conn.close()
         return rows
 
-    def vehicle(self):
+    @staticmethod
+    def vehicle():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("SELECT * FROM vehicles_inventory")
@@ -114,7 +148,8 @@ class view(object):
 class search(object):
     """Search table for Roadworks currently works with location"""
 
-    def job(self, location="", client="", start_date="", end_date=""):
+    @staticmethod
+    def job(location="", client="", start_date="", end_date=""):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""SELECT * FROM road_works WHERE location=?
@@ -127,22 +162,24 @@ class search(object):
 
 class delete(object):
     """Delete job, stock, vehicle in original database tables"""
-
-    def job(self, id):
+    @staticmethod
+    def job(id):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("DELETE FROM road_works WHERE id=?", (id,))
         conn.commit()
         conn.close()
 
-    def stock(self, id):
+    @staticmethod
+    def stock(id):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("DELETE FROM stock_inventory WHERE id=?", (id,))
         conn.commit()
         conn.close()
 
-    def vehicle(self, id):
+    @staticmethod
+    def vehicle(sid):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("DELETE FROM vehicle_inventory WHERE id=?", (id,))
@@ -153,8 +190,8 @@ class delete(object):
 class update(object):
 
     """Update job, stock, vehicle rows in their respective data tables"""
-
-    def job(self, id, location, client, start_date, end_date):
+    @staticmethod
+    def job(id, location, client, start_date, end_date):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""UPDATE road_works SET location=?, client=?,
@@ -163,7 +200,8 @@ class update(object):
         conn.commit()
         conn.close()
 
-    def stock(self, id, name, amount, weight, warning_level):
+    @staticmethod
+    def stock(id, name, amount, weight, warning_level):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""UPDATE stock_inventory SET name=?,
@@ -237,7 +275,7 @@ def job_update(id, location, client, start_date, end_date):
     conn.close()
 
 
-job_connect()
+# job_connect()
 
 
 # Create Inventory Table and interact
@@ -288,7 +326,7 @@ def stock_update(id, name, amount, weight, warning_level):
     conn.close()
 
 
-stock_connect()
+# stock_connect()
 
 # Create Vehicles table and interact
 
@@ -331,7 +369,7 @@ def vehicle_delete(id):
     conn.close()
 
 
-vehicle_connect()
+# vehicle_connect()
 
 
 def assigned_connect():
@@ -368,6 +406,9 @@ def assigned_view():
     return rows
 
 
-assigned_connect()
-
-vehicle_insert("TM460", "SRL63 NEW", "3.5t")
+# assigned_connect()
+Connect.job()
+Connect.stock()
+Connect.vehicle()
+Connect.assigned_stock()
+Connect.additional()

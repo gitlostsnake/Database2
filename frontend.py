@@ -1,6 +1,5 @@
 from tkinter import *
 import backend
-# import backend_assigned
 from tkinter import messagebox
 
 
@@ -21,8 +20,9 @@ from tkinter import messagebox
 # Click an item in the main window and have it return its values
 # to the fields below the main window for appending
 class selected(object):
-
-    def job(self):
+    """Selected item in the list boxes"""
+    @staticmethod
+    def job():
         global selected_roadworks
         index = list1.curselection()[0]
         selected_roadworks = list1.get(index)
@@ -36,7 +36,8 @@ class selected(object):
         End_Date_Entry.insert(END, selected_roadworks[4])
         return selected_roadworks
 
-    def stock(self):
+    @staticmethod
+    def stock():
         global selected_item
         index = stocklist.curselection()[0]
         selected_item = stocklist.get(index)
@@ -50,75 +51,60 @@ class selected(object):
         ITEM_Warning_Entry.insert(END, selected_item[4])
         return selected_item
 
-    def vehicle(self):
+    @staticmethod
+    def vehicle():
         global selected_vehicle
         index = VehicleList.curselection()[0]
         selected_vehicle = VehicleList.get(index)
         return selected_vehicle
 
-
-def get_selected_roadwork(event):
-    global selected_roadworks
-    index = list1.curselection()[0]
-    selected_roadworks = list1.get(index)
-    Location_Entry.delete(0, END)
-    Location_Entry.insert(END, selected_roadworks[1])
-    Client_Entry.delete(0, END)
-    Client_Entry.insert(END, selected_roadworks[2])
-    Start_Date_Entry.delete(0, END)
-    Start_Date_Entry.insert(END, selected_roadworks[3])
-    End_Date_Entry.delete(0, END)
-    End_Date_Entry.insert(END, selected_roadworks[4])
-    return selected_roadworks
+    @staticmethod
+    def assigned_stock():
+        global selected_assigned
+        index = assigned_list.curselection()[0]
+        selected_assigned = assigned_list.get(index)
+        return selected_assigned
 
 
-def get_selected_item(event):
-    global selected_item
-    index = stocklist.curselection()[0]
-    selected_item = stocklist.get(index)
-    ITEM_STOCK_Entry.delete(0, END)
-    ITEM_STOCK_Entry.insert(END, selected_item[1])
-    ITEM_Amount_Entry.delete(0, END)
-    ITEM_Amount_Entry.insert(END, selected_item[2])
-    ITEM_Weight_Entry.delete(0, END)
-    ITEM_Weight_Entry.insert(END, selected_item[3])
-    ITEM_Warning_Entry.delete(0, END)
-    ITEM_Warning_Entry.insert(END, selected_item[4])
-    return selected_item
+class view(object):
+    """View """
+    @staticmethod
+    def job():
+        list1.delete(0, END)
+        for row in backend.view.job():
+            list1.insert(END, row)
 
+    @staticmethod
+    def stock():
+        stocklist.delete(0, END)
+        for row in backend.view.stock():
+            stocklist.insert(END, row)
 
-def get_selected_vehicle(event):
-    global selected_vehicle
-    index = VehicleList.curselection()[0]
-    selected_vehicle = VehicleList.get(index)
-    return selected_vehicle
-
-
-def get_selected_assigned(event):
-    global selected_assigned
-    index = assigned_list.curselection()[0]
-    selected_assigned = assigned_list.get(index)
-    return selected_assigned
+    @staticmethod
+    def vehicles():
+        VehicleList.delete(0, END)
+        for row in backend.view.vehicle():
+            VehicleList.insert(END, row)
 
 
 # FUNCTIONS for buttons
 def view_roadworks():
     # Deleting from index 0 to the end so we don't duplicate items on display
     list1.delete(0, END)
-    for row in backend.view.job(object):
+    for row in backend.view.job():
         list1.insert(END, row)  # END means every new row is added at the end
 
 
 # Displays Stock items from inventory DB and displays them on seperate listbox
 def view_inventory():
     stocklist.delete(0, END)
-    for row in backend.view.stock(object):
+    for row in backend.view.stock():
         stocklist.insert(END, row)
 
 
 def view_vehicles():
     VehicleList.delete(0, END)
-    for row in backend.view.vehicle(object):
+    for row in backend.view.vehicle():
         VehicleList.insert(END, row)
 
 
@@ -131,22 +117,22 @@ def view_assigned():
 # Currently only searches location column
 def search_roadworks():
     list1.delete(0, END)
-    for row in backend.job_search(search_text.get()):
+    for row in backend.search.job(search_text.get()):
         list1.insert(END, row)
 
 
 #
 def delete_roadworks():
-    backend.job_delete(selected_roadworks[0])
+    backend.delete.job(selected_roadworks[0])
     list1.delete(0, END)
-    for row in backend.job_view():
+    for row in backend.view.job():
         list1.insert(END, row)
 
 
 def delete_inventory():
-    backend.stock_delete(selected_item[0])
+    backend.delete.stock(selected_item[0])
     stocklist.delete(0, END)
-    for row in backend.stock_view():
+    for row in backend.view.stock():
         stocklist.insert(END, row)
 
 
@@ -202,6 +188,10 @@ def assign_item_job():
     for row in backend.assigned_view():
         assigned_list.insert(END, row)
 
+
+def add_additional():
+    backend.insert.additional(selected_roadworks[0],
+                              km_text, job_type, crew_text)
 
 # def assign_vehicle_job():
 #     backend.assigned_insert
@@ -287,7 +277,7 @@ list1.grid(row=1, column=1, rowspan=15, columnspan=15)
 sb1 = Scrollbar(window)
 # sb1.grid(row=3, column=16, rowspan=4)
 
-list1.bind('<<ListboxSelect>>', get_selected_roadwork)
+list1.bind('<<ListboxSelect>>', selected.job)
 
 # scroll set to sb1
 list1.configure(yscrollcommand=sb1.set)
@@ -300,7 +290,7 @@ assigned_label.grid(row=0, column=18)
 assigned_list = Listbox(window, height=12, width=30)
 assigned_list.grid(row=1, column=18, rowspan=15, columnspan=7)
 
-assigned_list.bind('<<ListboxSelect>>', get_selected_assigned)
+assigned_list.bind('<<ListboxSelect>>', selected.assigned_stock)
 
 #   4c. MAIN BOX FOR STOCK ITEMS
 Stock_list_label = Label(window, text="")
@@ -318,13 +308,13 @@ sb2 = Scrollbar(window)
 stocklist.configure(yscrollcommand=sb2.set)
 sb2.configure(command=stocklist.yview)
 
-stocklist.bind('<<ListboxSelect>>', get_selected_item)
+stocklist.bind('<<ListboxSelect>>', selected.stock)
 
 #   4d. MAIN BOX FOR VEHICLES
 VehicleList = Listbox(window, height=5, width=70)
 VehicleList.grid(row=41, column=1, rowspan=15, columnspan=15)
 
-VehicleList.bind('<<ListboxSelect>>', get_selected_vehicle)
+VehicleList.bind('<<ListboxSelect>>', selected.vehicle)
 
 #   4e. MAIN BOX FOR PERSONEL
 # personel_label = Label(window, text="Personel")
@@ -456,8 +446,8 @@ update_additonal_button.grid(row=20, column=19)
 created_by_label = Label(window, text="+")
 created_by_label.grid(row=57, column=0)
 
-view_roadworks()
-view_inventory()
-view_vehicles()
 
+view.job()
+view.stock()
+view.vehicles()
 window.mainloop()
