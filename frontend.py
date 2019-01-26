@@ -1,453 +1,328 @@
 from tkinter import *
 import backend
-from tkinter import messagebox
 
 
-# CONTENTS
-# 1. RoadWorks functions
-# 2a. Stock Buttons with commands
-# 2b. Roadwork buttons with commands
-# 3. Search bar
-# 4a. Road work Main view window with scroll bar
-# 4b. Stock Main view window with scroll bar
-# 5a. DATAFIELDS AND ENTRY BOXES
-# 5b. ADDITIONAL DATA
-#         Length in KM, Countdown till startdate OR enddate,
-#         print off paperwork function??
+class GUI:
+    """Tkinter"""
+
+    def __init__(self, master):
+        self.master = master
+        master.title("TM database")
+
+        class Selected(object):
+            """Selected item in the list boxes"""
+
+            @staticmethod
+            def job():
+                global selected_roadworks
+                index = joblistbox.curselection()[0]
+                selected_roadworks = joblistbox.get(index)
+                Location_Entry.delete(0, END)
+                Location_Entry.insert(END, selected_roadworks[1])
+                Client_Entry.delete(0, END)
+                Client_Entry.insert(END, selected_roadworks[2])
+                Start_Date_Entry.delete(0, END)
+                Start_Date_Entry.insert(END, selected_roadworks[3])
+                End_Date_Entry.delete(0, END)
+                End_Date_Entry.insert(END, selected_roadworks[4])
+                return selected_roadworks
+
+            @staticmethod
+            def stock():
+                global selected_item
+                index = stocklistbox.curselection()[0]
+                selected_item = stocklistbox.get(index)
+                ITEM_STOCK_Entry.delete(0, END)
+                ITEM_STOCK_Entry.insert(END, selected_item[1])
+                ITEM_Amount_Entry.delete(0, END)
+                ITEM_Amount_Entry.insert(END, selected_item[2])
+                ITEM_Weight_Entry.delete(0, END)
+                ITEM_Weight_Entry.insert(END, selected_item[3])
+                ITEM_Warning_Entry.delete(0, END)
+                ITEM_Warning_Entry.insert(END, selected_item[4])
+                return selected_item
+
+            @staticmethod
+            def vehicle():
+                global selected_vehicle
+                index = vehiclelistbox.curselection()[0]
+                selected_vehicle = vehiclelistbox.get(index)
+                return selected_vehicle
+
+            @staticmethod
+            def assigned_stock():
+                global selected_assigned
+                index = assignedlistbox.curselection()[0]
+                selected_assigned = assignedlistbox.get(index)
+                return selected_assigned
+
+        class View(object):
+            """View """
+
+            @staticmethod
+            def job():
+                joblistbox.delete(0, END)
+                for row in backend.View.job():
+                    joblistbox.insert(END, row)
+
+            @staticmethod
+            def stock():
+                stocklistbox.delete(0, END)
+                for row in backend.View.stock():
+                    stocklistbox.insert(END, row)
+
+            @staticmethod
+            def vehicles():
+                vehiclelistbox.delete(0, END)
+                for row in backend.View.vehicle():
+                    vehiclelistbox.insert(END, row)
+
+            @staticmethod
+            def assigned():
+                assignedlistbox.delete(0, END)
+                for row in backend.View.assigned():
+                    assignedlistbox.insert(END, row)
+
+        def job_search_bar():
+            joblistbox.delete(0, END)
+            for row in backend.Search.job(search_text.get()):
+                joblistbox.inbsert(END, row)
+
+        class Delete(object):
+            """Delete job, stock or vehicle."""
+
+            @staticmethod
+            def job():
+                backend.Delete.job(Selected.job()[0])
+                joblistbox.delete(0, END)
+                for row in backend.View.job():
+                    joblistbox.insert(END, row)
+
+            @staticmethod
+            def stock():
+                backend.Delete.stock(Selected.stock()[0])
+                stocklistbox.delete(0, END)
+                for row in backend.View.stock():
+                    stocklistbox.insert(END, row)
+
+            @staticmethod
+            def vehicle():
+                backend.Delete.vehicle(Selected.vehicle()[0])
+                vehiclelistbox.delete(0, END)
+                for row in backend.View.vehicle():
+                    vehiclelistbox.insert(END, row)
+
+        class InsertEntry(object):
+
+            @staticmethod
+            def job():
+                backend.Insert.job(location_text.get(), client_text.get(),
+                                   startdate_text.get(), enddate_text.get())
+                joblistbox.delete(0, END)
+                for row in backend.View.job():
+                    joblistbox.insert(END, row)
+
+            @staticmethod
+            def stock():
+                backend.Insert.stock(itemname_text.get(), itemamount_text.get(),
+                                     itemweight_text.get(), itemwarning_text.get())
+                stocklistbox.delete(0, END)
+                for row in backend.View.stock():
+                    stocklistbox.insert(END, row)
+
+            @staticmethod
+            def additional():
+                pass
+
+        class Update(object):
+
+            @staticmethod
+            def job():
+                backend.Update.job(Selected.job()[0], location_text.get(),
+                                   client_text.get(), startdate_text.get(),
+                                   enddate_text.get())
+                joblistbox.delete(0, END)
+                for row in backend.View.job():
+                    joblistbox.insert(END, row)
+
+            @staticmethod
+            def stock():
+                backend.Update.stock(Selected.stock()[0], itemname_text.get(),
+                                     itemamount_text.get(), itemweight_text.get(),
+                                     itemwarning_text.get())
+                stocklistbox.delete(0, END)
+                for row in backend.View.stock():
+                    stocklistbox.insert(END, row)
+
+        class Assign(object):
+
+            @staticmethod
+            def stock():
+                backend.Insert.assigned(Selected.stock()[0], Selected.job()[0])
+                assignedlistbox.delete(0, END)
+                for row in backend.View.assigned():
+                    assignedlistbox.insert(END, row)
+
+            @staticmethod
+            def vehicle():
+                pass
+
+            @staticmethod
+            def person():
+                pass
+
+        """Main Job buttons"""
+        self.view_job = Button(window, text="View Job", width=14,
+                               command=View.job)
+        self.view_job.grid(row=4, column=0)
+
+        self.delete_job = Button(window, text= "Delete Job", width= 14,
+                                 command=Delete.job)
+
+        """Main Stock buttons"""
+        self.view_stock = Button(window, text="View Stock", width=14,
+                                 command=View.stock)
+        self.view_stock.grid(row=25, column=0)
+
+        self.remove_stock = Button(window, text="Remove Stock", width=14,
+                                   command=Delete.stock)
+        self.remove_stock.grid(row=27, column=0)
+
+        """List boxes"""
+        """Job"""
+        self.joblistbox = Listbox(window, height=12, width=70)
+        self.joblistbox.grid(row=1, column=1, rowspan=15, columnspan=15)
+
+        self.job_scrollbar = Scrollbar(window)
+        self.job_scrollbar.configure(command=self.joblistbox.yview)
+
+        self.joblistbox.configure(yscrollcommand=self.job_scrollbar.set)
+        self.joblistbox.bind('<<ListboxSelect>>', Selected.job)
+
+        """Assigned"""
+        self.assigned_label = Label(window, text="Assigned Stock")
+        self.assigned_label.grid(row=0, column=18)
+
+        self.assignedlistbox = Listbox(window, height=12, width=30)
+        self.assignedlistbox.grid(row=1, column=18, rowspan=15, columnspan=7)
+
+        self.assignedlistbox.bind('<<ListboxSelect>>', Selected.assigned_stock)
+
+        """Stock"""
+        self.stock_label = Label(window, text="")
+        self.stock_label.grid(row=22, column=2)
+
+        self.stocklistbox = Listbox(window, height=5, width=70)
+        self.stocklistbox.grid(row=23, column=1, rowspan=15, columnspan=15)
+
+        self.spacer_label = Label(window, text="")
+        self.spacer_label.grid(row=40, column=0)
+
+        self.stock_scrollbar = Scrollbar(window)
+        self.stocklistbox.configure(yscrollcommand=self.stock_scrollbar.set)
+        self.stock_scrollbar.configure(command=self.stocklistbox.yview)
+
+        self.stocklistbox.bind('<<ListboxSelect>>', Selected.stock)
+
+        """Vehicles"""
+        self.vehiclelistbox = Listbox(window, height=5, width=70)
+        self.vehiclelistbox.grid(row=41, column=1, rowspan=15, columnspan=15)
+
+        self.vehiclelistbox.bind('<<ListboxSelect>>', Selected.vehicle)
+
+        """Entry Mid section"""
+        """Job Entry Fields"""
+
+        self.help = Label(window, text="""
+                            Fill in the fields, press Create for a new entry""")
+        self.help.grid(row=16, column=0, columnspan=4)
+
+        self.location_label = Label(window, text="Location")
+        self.location_label.grid(row=17, column=0)
+        self.location_text = StringVar()
+        self.location_entry = Entry(window, textvariable=self.location_text)
+        self.location_entry.grid(row=17, column=1)
+
+        self.client_label = Label(window, text="Client")
+        self.client_label.grid(row=18, column=0)
+        self.client_text = StringVar()
+        self.client_entry = Entry(window, textvariable=self.client_text)
+        self.client_entry.grid(row=18, column=1)
+
+        self.startdate_label = Label(window, text="Start Date \nYYYY-MM-DD 00:00")
+        self.startdate_label.grid(row=18, column=2)
+        self.startdate_text = StringVar()
+        self.startdate_entry = Entry(window, textvariable=self.startdate_text)
+        self.startdate_entry.grid(row=18, column=3)
+
+        self.enddate_label = Label(window, text="End Date \nYYYY-MM-DD 00:00")
+        self.enddate_label.grid(row=18, column=2)
+        self.enddate_text = StringVar()
+        self.enddate_entry = Entry(window, textvariable=self.enddate_text)
+        self.enddate_entry.grid(row=18, column=3)
+
+        """Stock Entry Fields"""
+
+        self.help2 = Label(window, text="""
+                            Or press the Update button to change info
+                            """)
+        self.help2.grid(row=19, column=2)
+
+        self.stockname_label = Label(window, text="Stock name")
+        self.stockname_label.grid(row=20, column=0)
+        self.stockname_text = StringVar()
+        self.stockname_entry = Entry(window, textvariable=self.stockname_text)
+        self.stockname_entry.grid(row=20, column=1)
+
+        self.stockamount_label = Label(window, text="Amount")
+        self.stockamount_label.grid(row=21, column=0)
+        self.stockamount_text = StringVar()
+        self.stockname_entry = Entry(window, textvariable=self.stockamount_text)
+        self.stockname_entry.grid(row=21, column=1)
+
+        self.stockweight_label = Label(window, text="Weight kg")
+        self.stockweight_label.grid(row=20, column=2)
+        self.stockweight_text = StringVar()
+        self.stockweight_entry = Entry(window, textvariable=self.stockweight_text)
+        self.stockweight_entry.grid(row=20, column=3)
+
+        self.stockwarning_label = Label(window, text="Warning %")
+        self.stockwarning_label.grid(row=21, column=2)
+        self.stockwarning_text = StringVar
+        self.stockwarning_entry = Entry(window, textvariable=self.stockwarning_text)
+        self.stockwarning_entry.grid(row=21, column=3)
+
+        """Additional Entry section"""
+
+        self.additional_label = Label(window, text="Additional \nData")
+        self.additional_label.grid(row=16, column=19)
+
+        self.joblength_label = Label(window, text="km")
+        self.joblength_label.grid(row=17, column=18)
+        self.joblength_text = StringVar()
+        self.joblength_entry = Entry(window, textvariable=self.joblength_text)
+        self.joblength_entry.grid(row=17, column=19)
+
+        self.additional_types_label = Label(window, text="Type")
+        self.additional_types_label.grid(row=18, column=18)
+        self.additional_types = {'Temporary', 'Static', 'Traffic Control', 'Other'}
+        self.jobtype_text = StringVar()
+        self.jobtype_text.set('Temporary')
+        self.jobtype_dropdown = OptionMenu(window, self.jobtype_text,
+                                            *self.additional_types)
+        self.jobtype_dropdown.grid(row=18, column=19)
+
+        self.crewrequired_label = Label(window, text="Crew Size")
+        self.crewrequired_label.grid(row=19, column=18)
+        self.crewrequired_text = StringVar()
+        self.crewrequired_entry = Entry(window, textvariable=self.crewrequired_text)
+        self.crewrequired_entry.grid(row=19, column=19)
+
+        self.update_additional_button = Button(window, text="Update Additional",
+                                               width=14)
+        self.update_additional_button.grid(row=20, column=19)
 
 
-# 1. ROADWORKS FUNCTIONS
-# Click an item in the main window and have it return its values
-# to the fields below the main window for appending
-class selected(object):
-    """Selected item in the list boxes"""
-    @staticmethod
-    def job():
-        global selected_roadworks
-        index = list1.curselection()[0]
-        selected_roadworks = list1.get(index)
-        Location_Entry.delete(0, END)
-        Location_Entry.insert(END, selected_roadworks[1])
-        Client_Entry.delete(0, END)
-        Client_Entry.insert(END, selected_roadworks[2])
-        Start_Date_Entry.delete(0, END)
-        Start_Date_Entry.insert(END, selected_roadworks[3])
-        End_Date_Entry.delete(0, END)
-        End_Date_Entry.insert(END, selected_roadworks[4])
-        return selected_roadworks
-
-    @staticmethod
-    def stock():
-        global selected_item
-        index = stocklist.curselection()[0]
-        selected_item = stocklist.get(index)
-        ITEM_STOCK_Entry.delete(0, END)
-        ITEM_STOCK_Entry.insert(END, selected_item[1])
-        ITEM_Amount_Entry.delete(0, END)
-        ITEM_Amount_Entry.insert(END, selected_item[2])
-        ITEM_Weight_Entry.delete(0, END)
-        ITEM_Weight_Entry.insert(END, selected_item[3])
-        ITEM_Warning_Entry.delete(0, END)
-        ITEM_Warning_Entry.insert(END, selected_item[4])
-        return selected_item
-
-    @staticmethod
-    def vehicle():
-        global selected_vehicle
-        index = VehicleList.curselection()[0]
-        selected_vehicle = VehicleList.get(index)
-        return selected_vehicle
-
-    @staticmethod
-    def assigned_stock():
-        global selected_assigned
-        index = assigned_list.curselection()[0]
-        selected_assigned = assigned_list.get(index)
-        return selected_assigned
-
-
-class view(object):
-    """View """
-    @staticmethod
-    def job():
-        list1.delete(0, END)
-        for row in backend.view.job():
-            list1.insert(END, row)
-
-    @staticmethod
-    def stock():
-        stocklist.delete(0, END)
-        for row in backend.view.stock():
-            stocklist.insert(END, row)
-
-    @staticmethod
-    def vehicles():
-        VehicleList.delete(0, END)
-        for row in backend.view.vehicle():
-            VehicleList.insert(END, row)
-
-
-# FUNCTIONS for buttons
-def view_roadworks():
-    # Deleting from index 0 to the end so we don't duplicate items on display
-    list1.delete(0, END)
-    for row in backend.view.job():
-        list1.insert(END, row)  # END means every new row is added at the end
-
-
-# Displays Stock items from inventory DB and displays them on seperate listbox
-def view_inventory():
-    stocklist.delete(0, END)
-    for row in backend.view.stock():
-        stocklist.insert(END, row)
-
-
-def view_vehicles():
-    VehicleList.delete(0, END)
-    for row in backend.view.vehicle():
-        VehicleList.insert(END, row)
-
-
-def view_assigned():
-    assigned_list.delete(0, END)
-    for row in backend.assigned_view():
-        assigned_list.insert(END, row)
-
-
-# Currently only searches location column
-def search_roadworks():
-    list1.delete(0, END)
-    for row in backend.search.job(search_text.get()):
-        list1.insert(END, row)
-
-
-#
-def delete_roadworks():
-    backend.delete.job(selected_roadworks[0])
-    list1.delete(0, END)
-    for row in backend.view.job():
-        list1.insert(END, row)
-
-
-def delete_inventory():
-    backend.delete.stock(selected_item[0])
-    stocklist.delete(0, END)
-    for row in backend.view.stock():
-        stocklist.insert(END, row)
-
-
-# Adds info in the Entry boxes to the database
-def add_to_roadworks():
-    backend.job_insert(Location_Text.get(), Client_Text.get(),
-                       Start_Date_Text.get(), End_Date_Text.get())
-    list1.delete(0, END)
-    for row in backend.job_view():
-        list1.insert(END, row)
-
-
-def add_to_inventory():
-    backend.stock_insert(ITEM_Name_Text.get(), ITEM_Amount_Text.get(),
-                         ITEM_Weight_Text.get(), ITEM_Warning_Text.get())
-    stocklist.delete(0, END)
-    for row in backend.stock_view():
-        stocklist.insert(END, row)
-
-
-# Update function takes items in the entry fields and uses
-# the UPDATE function from backend to edit the rows
-def update_roadworks():
-    backend.job_update(selected_roadworks[0], Location_Text.get(),
-                       Client_Text.get(), Start_Date_Text.get(), End_Date_Text.get())
-    list1.delete(0, END)
-    for row in backend.job_view():
-        list1.insert(END, row)
-
-
-def update_inventory():
-    backend.stock_update(selected_item[0], ITEM_Name_Text.get(),
-                         ITEM_Amount_Text.get(), ITEM_Weight_Text.get(),
-                         ITEM_Warning_Text.get())
-    stocklist.delete(0, END)
-    for row in backend.stock_view():
-        stocklist.insert(END, row)
-
-
-def message2_user():
-    messagebox.showinfo("Advice", "Tough")
-
-
-def howmuchtaken():
-    taken_text = StringVar()
-    messagebox.showinfo("Taken?", "Input coming soon")
-    return assign_item_job()
-
-
-def assign_item_job():
-    backend.assigned_insert(selected_item[0], selected_roadworks[0])
-    assigned_list.delete(0, END)
-    for row in backend.assigned_view():
-        assigned_list.insert(END, row)
-
-
-def add_additional():
-    backend.insert.additional(selected_roadworks[0],
-                              km_text, job_type, crew_text)
-
-# def assign_vehicle_job():
-#     backend.assigned_insert
-
-
-# Main
 window = Tk()
-window.title("DB")
-
-# 2. BUTTONS WITH FUNCTIONS
-# Inventory Buttons
-view_stk_b = Button(window, text="View Stock", width=14,
-                    command=view_inventory)
-view_stk_b.grid(row=25, column=0)
-
-Create_Stock_Button = Button(window, text="Create Stock Entry", width=14,
-                             command=add_to_inventory)
-Create_Stock_Button.grid(row=20, column=4)
-
-Remove_Stock_Button = Button(window, text="Remove Stock", width=14,
-                             command=delete_inventory)
-Remove_Stock_Button.grid(row=27, column=0)
-
-update_stock_button = Button(window, text="Update Stock", width=14,
-                             command=update_inventory)
-update_stock_button.grid(row=21, column=4)
-
-# Road works Buttons on the right side NOW ON LEFT
-view_wrks_b = Button(window, text="View Road Works", width=14,
-                     command=view_roadworks)
-view_wrks_b.grid(row=4, column=0)
-
-Delete_Roadworks_Button = Button(window, text="Del Road Works", width=14,
-                                 command=delete_roadworks)
-Delete_Roadworks_Button.grid(row=6, column=0)
-
-Create_Roadworks_Button = Button(window, text="Create Job Entry", width=14,
-                                 command=add_to_roadworks)
-Create_Roadworks_Button.grid(row=17, column=4)
-
-Print_Out_Button = Button(window, text="Print Details", width=14)
-Print_Out_Button.grid(row=15, column=0)
-
-# PLUS Data Update using the same boxes as add to database.
-Update_RDatabaseButton = Button(window, text="Update Job", width=14,
-                                command=update_roadworks)
-Update_RDatabaseButton.grid(row=18, column=4)
-
-# Vehicle Buttons
-ViewVehicles_Button = Button(window, text="View Vehicles", width=14,
-                             command=view_vehicles)
-ViewVehicles_Button.grid(row=41, column=0)
-
-# This button will be used for adding inventory items to the road works
-# using start date and end date you can give a stock forcast to see what
-# inventory will look like 5 months from now and when your going to struggle
-# CREATE TABLE in ROADWORKS selected_Roadworks[] + selected_item[]
-assign_vehicle_button = Button(window, text="Assign Vehicle", width=14)
-assign_vehicle_button.grid(row=13, column=0)
-
-assign_stock_button = Button(window, text="Assign Stock", width=14,
-                             command=howmuchtaken)
-assign_stock_button.grid(row=14, column=0)
-
-# 3. SEARCH BAR
-# Search bar at the top with an entry box to type into
-# search_label = Label(window, text= "")
-# search_label.grid(row=0, column=1)
-
-search_text = StringVar()
-e1 = Entry(window, textvariable=search_text)
-e1.grid(row=0, column=1)
-
-search_button = Button(window, text="Search", width=8,
-                       command=search_roadworks)
-search_button.grid(row=0, column=2)
-
-#   4a. MAIN BOX FOR ROADWORKS WITH SCROLL BAR
-# Main view box listing items with scroll bar
-list1 = Listbox(window, height=12, width=70)
-list1.grid(row=1, column=1, rowspan=15, columnspan=15)
-
-sb1 = Scrollbar(window)
-# sb1.grid(row=3, column=16, rowspan=4)
-
-list1.bind('<<ListboxSelect>>', selected.job)
-
-# scroll set to sb1
-list1.configure(yscrollcommand=sb1.set)
-sb1.configure(command=list1.yview)
-
-#   4b. MAIN BOX FOR ASSIGNED ITEMS
-assigned_label = Label(window, text="Assigned")
-assigned_label.grid(row=0, column=18)
-
-assigned_list = Listbox(window, height=12, width=30)
-assigned_list.grid(row=1, column=18, rowspan=15, columnspan=7)
-
-assigned_list.bind('<<ListboxSelect>>', selected.assigned_stock)
-
-#   4c. MAIN BOX FOR STOCK ITEMS
-Stock_list_label = Label(window, text="")
-Stock_list_label.grid(row=22, column=2)
-
-stocklist = Listbox(window, height=5, width=70)
-stocklist.grid(row=23, column=1, rowspan=15, columnspan=15)
-
-spacer_label = Label(window, text="")
-spacer_label.grid(row=40, column=0)
-
-sb2 = Scrollbar(window)
-# sb2.grid(row=25, column=16, rowspan=4)
-
-stocklist.configure(yscrollcommand=sb2.set)
-sb2.configure(command=stocklist.yview)
-
-stocklist.bind('<<ListboxSelect>>', selected.stock)
-
-#   4d. MAIN BOX FOR VEHICLES
-VehicleList = Listbox(window, height=5, width=70)
-VehicleList.grid(row=41, column=1, rowspan=15, columnspan=15)
-
-VehicleList.bind('<<ListboxSelect>>', selected.vehicle)
-
-#   4e. MAIN BOX FOR PERSONEL
-# personel_label = Label(window, text="Personel")
-# personel_label.grid(row=25, column=18)
-
-# personel_list = Listbox(window, height=12, width=30)
-# personel_list.grid(row=26, column=18, rowspan=15, columnspan=7)
-
-#   5a. DATA AND ENTRY BOXES
-# data entry to use add roadworks using labels instead of buttons
-# so we can rig all of them up to the "Add to database" button
-HEYlisten_ADD = Label(window, text="""
-                        Fill in the fields, press Create for a new entry""")
-HEYlisten_ADD.grid(row=16, column=0, columnspan=4)
-
-Location_Text = StringVar()
-
-Location_Label = Label(window, text="Location")
-Location_Label.grid(row=17, column=0)
-Location_Entry = Entry(window, textvariable=Location_Text)
-Location_Entry.grid(row=17, column=1)
-
-Client_Text = StringVar()
-
-Client_Label = Label(window, text="Client")
-Client_Label.grid(row=18, column=0)
-Client_Entry = Entry(window, textvariable=Client_Text)
-Client_Entry.grid(row=18, column=1)
-
-Start_Date_Text = StringVar()
-
-Start_Date_Label = Label(window, text="Start Date \nYY-MM-DD 00:00")
-Start_Date_Label.grid(row=17, column=2)
-Start_Date_Entry = Entry(window, textvariable=Start_Date_Text)
-Start_Date_Entry.grid(row=17, column=3)
-
-End_Date_Text = StringVar()
-
-End_Date_Label = Label(window, text="End Date \nYY-MM-DD 00:00")
-End_Date_Label.grid(row=18, column=2)
-End_Date_Entry = Entry(window, textvariable=End_Date_Text)
-End_Date_Entry.grid(row=18, column=3)
-
-# Info for the user to edit or create new entry in the database
-hey_listen = Label(window, text="""
-                           Or press the Update button to change info""")
-hey_listen.grid(row=19, column=0, columnspan=4)
-
-Help_Button = Button(window, text="Need help?", width=14,
-                     command=message2_user)
-Help_Button.grid(row=57, column=19)
-
-# STOCK ENTRY
-ITEM_Name_Text = StringVar()
-
-ITEM_Name_Label = Label(window, text="Stock item\nname")
-ITEM_Name_Label.grid(row=20, column=0)
-ITEM_STOCK_Entry = Entry(window, textvariable=ITEM_Name_Text)
-ITEM_STOCK_Entry.grid(row=20, column=1)
-
-ITEM_Amount_Text = StringVar()
-
-ITEM_Amount_Label = Label(window, text="Amount")
-ITEM_Amount_Label.grid(row=21, column=0)
-ITEM_Amount_Entry = Entry(window, textvariable=ITEM_Amount_Text)
-ITEM_Amount_Entry.grid(row=21, column=1)
-
-ITEM_Weight_Text = StringVar()
-
-ITEM_Weight_Label = Label(window, text="Weight")
-ITEM_Weight_Label.grid(row=20, column=2)
-ITEM_Weight_Entry = Entry(window, textvariable=ITEM_Weight_Text)
-ITEM_Weight_Entry.grid(row=20, column=3)
-
-ITEM_Warning_Text = StringVar()
-
-ITEM_Warning_Label = Label(window, text="Warning %")
-ITEM_Warning_Label.grid(row=21, column=2)
-ITEM_Warning_Entry = Entry(window, textvariable=ITEM_Warning_Text)
-ITEM_Warning_Entry.grid(row=21, column=3)
-# Stock interface section will be merged into the main window alongside
-# The roadworks interface.. but for ease of reading I will have it seperated
-# In the code.
-
-# 5b. ADDITIONAL DATA
-#         Length in KM, Countdown till startdate OR enddate,
-#         print off paperwork function??
-# Additional_Data = Label(window, text="ADDITIONAL DATA")
-# Additional_Data.grid(row = 20, column = 2)
-
-
-Additional_data_label = Label(window, text="Additional\nData")
-Additional_data_label.grid(row=16, column=19)
-
-km_text = StringVar()
-km_label = Label(window, text="Km")
-km_label.grid(row=17, column=18)
-km_entry = Entry(window, textvariable=km_text)
-km_entry.grid(row=17, column=19)
-
-job_type_label = Label(window, text="Type")
-job_type_label.grid(row=18, column=18)
-
-job_type_choices = {'Temporary', 'Static', 'Traffic Control', 'Other'}
-job_type = StringVar()
-job_type.set('Temporary')
-job_choice_popup = OptionMenu(window, job_type, *job_type_choices)
-job_choice_popup.grid(row=18, column=19)
-
-# job_type_entry = Entry(window, textvariable=job_type_text)
-# job_type_entry.grid(row=18, column=19)
-
-
-crew_text = StringVar()
-crew_label = Label(window, text="Crew Size")
-crew_label.grid(row=19, column=18)
-crew_entry = Entry(window, textvariable=crew_text)
-crew_entry.grid(row=19, column=19)
-
-update_additonal_button = Button(window, text="Update Additional",
-                                 width=14)
-update_additonal_button.grid(row=20, column=19)
-# Length_KM = Label(window, text="Length(km)")
-# Length_KM.grid(row = 21, column = 0)
-
-# Traffic_lights_required = Label(window, text="Traffic lights?")
-# Traffic_lights_required.grid(row = 21, column = 2)
-
-created_by_label = Label(window, text="+")
-created_by_label.grid(row=57, column=0)
-
-
-view.job()
-view.stock()
-view.vehicles()
+My_Gui = GUI(window)
 window.mainloop()

@@ -73,7 +73,7 @@ class Connect(object):
         conn.close()
 
 
-class insert(object):
+class Insert(object):
     """Insert job, stock or vehicle"""
     @staticmethod
     def job(location, client, start_date, end_date):
@@ -113,8 +113,17 @@ class insert(object):
         conn.commit()
         conn.close()
 
+    @staticmethod
+    def assigned(item_id, job_id):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("INSERT INTO assigned_to VALUES (NULL, ?,?)",
+                    (item_id, job_id))
+        conn.commit()
+        conn.close()
 
-class view(object):
+
+class View(object):
     """View job, stock, vehicle"""
 
     @staticmethod
@@ -144,8 +153,17 @@ class view(object):
         conn.close()
         return rows
 
+    @staticmethod
+    def assigned():
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM assigned_to")
+        rows = cur.fetchall()
+        conn.close()
+        return rows
 
-class search(object):
+
+class Search(object):
     """Search table for Roadworks currently works with location"""
 
     @staticmethod
@@ -160,7 +178,7 @@ class search(object):
         return rows
 
 
-class delete(object):
+class Delete(object):
     """Delete job, stock, vehicle in original database tables"""
     @staticmethod
     def job(id):
@@ -179,7 +197,7 @@ class delete(object):
         conn.close()
 
     @staticmethod
-    def vehicle(sid):
+    def vehicle(id):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("DELETE FROM vehicle_inventory WHERE id=?", (id,))
@@ -187,7 +205,7 @@ class delete(object):
         conn.close()
 
 
-class update(object):
+class Update(object):
 
     """Update job, stock, vehicle rows in their respective data tables"""
     @staticmethod
@@ -260,7 +278,7 @@ def job_search(location="", client="", start_date="", end_date=""):
 def job_delete(id):
     conn = sqlite3.connect("road_works.db")
     cur = conn.cursor()
-    cur.execute("DELETE FROM road_works WHERE id=?",(id,))
+    cur.execute("DELETE FROM road_works WHERE id=?", (id,))
     conn.commit()
     conn.close()
 
