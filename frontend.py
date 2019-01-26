@@ -146,21 +146,21 @@ class GUI:
 
             @staticmethod
             def job():
-                backend.Update.job(Selected.job()[0], location_text.get(),
-                                   client_text.get(), startdate_text.get(),
-                                   enddate_text.get())
-                joblistbox.delete(0, END)
+                backend.Update.job(Selected.job(), My_Gui.location_text.get(),
+                                   My_Gui.client_text.get(), My_Gui.startdate_text.get(),
+                                   My_Gui.enddate_text.get())
+                My_Gui.joblistbox.delete(0, END)
                 for row in backend.View.job():
-                    joblistbox.insert(END, row)
+                    My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                backend.Update.stock(Selected.stock()[0], itemname_text.get(),
-                                     itemamount_text.get(), itemweight_text.get(),
-                                     itemwarning_text.get())
-                stocklistbox.delete(0, END)
+                backend.Update.stock(Selected.stock()[0], My_Gui.itemname_text.get(),
+                                     My_Gui.itemamount_text.get(), My_Gui.itemweight_text.get(),
+                                     My_Gui.itemwarning_text.get())
+                My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
-                    stocklistbox.insert(END, row)
+                    My_Gui.stocklistbox.insert(END, row)
 
         class Assign(object):
 
@@ -204,10 +204,6 @@ class GUI:
         self.remove_stock = Button(window, text="Remove Stock", width=12,
                                    command=Delete.stock)
         self.remove_stock.grid(row=27, column=0)
-
-        self.create_stock = Button(window, text="Create Stock", width=12,
-                                        command=InsertEntry.stock)
-        self.create_stock.grid(row=20, column=4)
 
         """List boxes"""
         """Job"""
@@ -300,9 +296,19 @@ class GUI:
 
         self.stockwarning_label = Label(window, text="Warning %")
         self.stockwarning_label.grid(row=21, column=2)
-        self.stockwarning_text = StringVar
+        self.stockwarning_text = StringVar()
         self.stockwarning_entry = Entry(window, textvariable=self.stockwarning_text)
         self.stockwarning_entry.grid(row=21, column=3)
+
+        """Stock Entry buttons"""
+
+        self.create_stock = Button(window, text="Create Stock", width=12,
+                                        command=InsertEntry.stock)
+        self.create_stock.grid(row=20, column=4)
+
+        self.update_stock = Button(window, text="Update Stock", width=12,
+                                        command=Update.stock)
+        self.update_stock.grid(row=21, column=4)
 
 
         """Additional Entry section"""
