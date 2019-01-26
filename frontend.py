@@ -13,47 +13,47 @@ class GUI:
             """Selected item in the list boxes"""
 
             @staticmethod
-            def job():
+            def job(*args):
                 global selected_roadworks
-                index = joblistbox.curselection()[0]
-                selected_roadworks = joblistbox.get(index)
-                Location_Entry.delete(0, END)
-                Location_Entry.insert(END, selected_roadworks[1])
-                Client_Entry.delete(0, END)
-                Client_Entry.insert(END, selected_roadworks[2])
-                Start_Date_Entry.delete(0, END)
-                Start_Date_Entry.insert(END, selected_roadworks[3])
-                End_Date_Entry.delete(0, END)
-                End_Date_Entry.insert(END, selected_roadworks[4])
+                index = My_Gui.joblistbox.curselection()[0]
+                selected_roadworks = My_Gui.joblistbox.get(index)
+                My_Gui.location_entry.delete(0, END)
+                My_Gui.location_entry.insert(END, selected_roadworks[1])
+                My_Gui.client_entry.delete(0, END)
+                My_Gui.client_entry.insert(END, selected_roadworks[2])
+                My_Gui.startdate_entry.delete(0, END)
+                My_Gui.startdate_entry.insert(END, selected_roadworks[3])
+                My_Gui.enddate_entry.delete(0, END)
+                My_Gui.enddate_entry.insert(END, selected_roadworks[4])
                 return selected_roadworks
 
             @staticmethod
-            def stock():
+            def stock(*args):
                 global selected_item
-                index = stocklistbox.curselection()[0]
-                selected_item = stocklistbox.get(index)
-                ITEM_STOCK_Entry.delete(0, END)
-                ITEM_STOCK_Entry.insert(END, selected_item[1])
-                ITEM_Amount_Entry.delete(0, END)
-                ITEM_Amount_Entry.insert(END, selected_item[2])
-                ITEM_Weight_Entry.delete(0, END)
-                ITEM_Weight_Entry.insert(END, selected_item[3])
-                ITEM_Warning_Entry.delete(0, END)
-                ITEM_Warning_Entry.insert(END, selected_item[4])
+                index = My_Gui.stocklistbox.curselection()[0]
+                selected_item = My_Gui.stocklistbox.get(index)
+                My_Gui.stockname_entry.delete(0, END)
+                My_Gui.stockname_entry.insert(END, selected_item[1])
+                My_Gui.stockname_entry.delete(0, END)
+                My_Gui.stockname_entry.insert(END, selected_item[2])
+                My_Gui.stockweight_entry.delete(0, END)
+                My_Gui.stockweight_entry.insert(END, selected_item[3])
+                My_Gui.stockwarning_entry.delete(0, END)
+                My_Gui.stockwarning_entry.insert(END, selected_item[4])
                 return selected_item
 
             @staticmethod
-            def vehicle():
+            def vehicle(*args):
                 global selected_vehicle
-                index = vehiclelistbox.curselection()[0]
-                selected_vehicle = vehiclelistbox.get(index)
+                index = My_Gui.vehiclelistbox.curselection()[0]
+                selected_vehicle = My_Gui.vehiclelistbox.get(index)
                 return selected_vehicle
 
             @staticmethod
-            def assigned_stock():
+            def assigned_stock(*args):
                 global selected_assigned
-                index = assignedlistbox.curselection()[0]
-                selected_assigned = assignedlistbox.get(index)
+                index = My_Gui.assignedlistbox.curselection()[0]
+                selected_assigned = My_Gui.assignedlistbox.get(index)
                 return selected_assigned
 
         class View(object):
@@ -61,32 +61,32 @@ class GUI:
 
             @staticmethod
             def job():
-                joblistbox.delete(0, END)
+                My_Gui.joblistbox.delete(0, END)
                 for row in backend.View.job():
-                    joblistbox.insert(END, row)
+                    My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                stocklistbox.delete(0, END)
+                My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
-                    stocklistbox.insert(END, row)
+                    My_Gui.stocklistbox.insert(END, row)
 
             @staticmethod
             def vehicles():
-                vehiclelistbox.delete(0, END)
+                My_Gui.vehiclelistbox.delete(0, END)
                 for row in backend.View.vehicle():
-                    vehiclelistbox.insert(END, row)
+                    My_Gui.vehiclelistbox.insert(END, row)
 
             @staticmethod
             def assigned():
-                assignedlistbox.delete(0, END)
+                My_Gui.assignedlistbox.delete(0, END)
                 for row in backend.View.assigned():
-                    assignedlistbox.insert(END, row)
+                    My_Gui.assignedlistbox.insert(END, row)
 
         def job_search_bar():
-            joblistbox.delete(0, END)
+            My_Gui.joblistbox.delete(0, END)
             for row in backend.Search.job(search_text.get()):
-                joblistbox.inbsert(END, row)
+                My_Gui.joblistbox.insert(END, row)
 
         class Delete(object):
             """Delete job, stock or vehicle."""
@@ -94,16 +94,16 @@ class GUI:
             @staticmethod
             def job():
                 backend.Delete.job(Selected.job()[0])
-                joblistbox.delete(0, END)
+                My_Gui.joblistbox.delete(0, END)
                 for row in backend.View.job():
-                    joblistbox.insert(END, row)
+                    My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
                 backend.Delete.stock(Selected.stock()[0])
-                stocklistbox.delete(0, END)
+                My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
-                    stocklistbox.insert(END, row)
+                    My_Gui.stocklistbox.insert(END, row)
 
             @staticmethod
             def vehicle():
@@ -116,19 +116,27 @@ class GUI:
 
             @staticmethod
             def job():
-                backend.Insert.job(location_text.get(), client_text.get(),
-                                   startdate_text.get(), enddate_text.get())
-                joblistbox.delete(0, END)
+                backend.Insert.job(My_Gui.location_text.get(), My_Gui.client_text.get(),
+                                   My_Gui.startdate_text.get(), My_Gui.enddate_text.get())
+                My_Gui.joblistbox.delete(0, END)
                 for row in backend.View.job():
-                    joblistbox.insert(END, row)
+                    My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                backend.Insert.stock(itemname_text.get(), itemamount_text.get(),
-                                     itemweight_text.get(), itemwarning_text.get())
-                stocklistbox.delete(0, END)
+                backend.stock_insert(My_Gui.stockname_text.get(), My_Gui.stockamount_text.get(),
+                                    My_Gui.stockweight_text.get(), My_Gui.stockwarning_text.get())
+                My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
-                    stocklistbox.insert(END, row)
+                    My_Gui.stocklistbox.insert(END, row)
+
+            def stocktest():
+                def add_to_inventory():
+                    backend.stock_insert(ITEM_Name_Text.get(), ITEM_Amount_Text.get(),
+                                         ITEM_Weight_Text.get(), ITEM_Warning_Text.get())
+                    stock_list.delete(0, END)
+                    for row in backend.stock_view():
+                        stock_list.insert(END, row)
 
             @staticmethod
             def additional():
@@ -172,21 +180,34 @@ class GUI:
                 pass
 
         """Main Job buttons"""
-        self.view_job = Button(window, text="View Job", width=14,
+        self.view_job = Button(window, text="View Job", width=12,
                                command=View.job)
         self.view_job.grid(row=4, column=0)
 
-        self.delete_job = Button(window, text= "Delete Job", width= 14,
+        self.delete_job = Button(window, text= "Delete Job", width= 12,
                                  command=Delete.job)
+        self.delete_job.grid(row=5, column=0)
+
+        self.insert_job = Button(window, text="Create Job", width=12,
+                                command=InsertEntry.job)
+        self.insert_job.grid(row=17, column=4)
+
+        self.update_job = Button(window, text="Update Job", width=12,
+                                command=Update.job)
+        self.update_job.grid(row=18, column=4)
 
         """Main Stock buttons"""
-        self.view_stock = Button(window, text="View Stock", width=14,
+        self.view_stock = Button(window, text="View Stock", width=12,
                                  command=View.stock)
         self.view_stock.grid(row=25, column=0)
 
-        self.remove_stock = Button(window, text="Remove Stock", width=14,
+        self.remove_stock = Button(window, text="Remove Stock", width=12,
                                    command=Delete.stock)
         self.remove_stock.grid(row=27, column=0)
+
+        self.create_stock = Button(window, text="Create Stock", width=12,
+                                        command=InsertEntry.stock)
+        self.create_stock.grid(row=20, column=4)
 
         """List boxes"""
         """Job"""
@@ -233,10 +254,6 @@ class GUI:
         """Entry Mid section"""
         """Job Entry Fields"""
 
-        self.help = Label(window, text="""
-                            Fill in the fields, press Create for a new entry""")
-        self.help.grid(row=16, column=0, columnspan=4)
-
         self.location_label = Label(window, text="Location")
         self.location_label.grid(row=17, column=0)
         self.location_text = StringVar()
@@ -250,10 +267,10 @@ class GUI:
         self.client_entry.grid(row=18, column=1)
 
         self.startdate_label = Label(window, text="Start Date \nYYYY-MM-DD 00:00")
-        self.startdate_label.grid(row=18, column=2)
+        self.startdate_label.grid(row=17, column=2)
         self.startdate_text = StringVar()
         self.startdate_entry = Entry(window, textvariable=self.startdate_text)
-        self.startdate_entry.grid(row=18, column=3)
+        self.startdate_entry.grid(row=17, column=3)
 
         self.enddate_label = Label(window, text="End Date \nYYYY-MM-DD 00:00")
         self.enddate_label.grid(row=18, column=2)
@@ -262,11 +279,6 @@ class GUI:
         self.enddate_entry.grid(row=18, column=3)
 
         """Stock Entry Fields"""
-
-        self.help2 = Label(window, text="""
-                            Or press the Update button to change info
-                            """)
-        self.help2.grid(row=19, column=2)
 
         self.stockname_label = Label(window, text="Stock name")
         self.stockname_label.grid(row=20, column=0)
@@ -291,6 +303,7 @@ class GUI:
         self.stockwarning_text = StringVar
         self.stockwarning_entry = Entry(window, textvariable=self.stockwarning_text)
         self.stockwarning_entry.grid(row=21, column=3)
+
 
         """Additional Entry section"""
 
@@ -319,7 +332,7 @@ class GUI:
         self.crewrequired_entry.grid(row=19, column=19)
 
         self.update_additional_button = Button(window, text="Update Additional",
-                                               width=14)
+                                               width=16)
         self.update_additional_button.grid(row=20, column=19)
 
 
