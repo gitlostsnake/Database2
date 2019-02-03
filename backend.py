@@ -11,7 +11,7 @@ class Connect(object):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS road_works
-                    (id INTEGER PRIMARY KEY, location TEXT, 
+                    (id INTEGER PRIMARY KEY, location TEXT,
                     client TEXT, start_date TEXT, end_date TEXT)
                     """)
         conn.commit()
@@ -32,8 +32,7 @@ class Connect(object):
     def vehicle():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
-        cur.execute("""
-                     CREATE TABLE IF NOT EXISTS vehicles_inventory
+        cur.execute("""CREATE TABLE IF NOT EXISTS vehicles_inventory
                      (id INTEGER PRIMARY KEY, FleetNo TEXT,
                      RegistrationNo TEXT, WeightLimit TEXT)
                      """)
@@ -45,7 +44,7 @@ class Connect(object):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""
-                    CREATE TABLE IF NOT EXISTS assigned_to
+                    CREATE TABLE IF NOT EXISTS assigned_stock
                     (id INTEGER PRIMARY KEY,
                     item_id INTEGER,
                     job_id INTEGER, FOREIGN KEY(item_id)
@@ -57,14 +56,28 @@ class Connect(object):
         conn.close()
 
     @staticmethod
+    def assigned_vehicle():
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("""
+                    CREATE TABLE IF NOT EXISTS assigned_vehicle
+                    (id INTEGER PRIMARY KEY,
+                    vehicle_id INTEGER,
+                    job_id INTEGER, FOREIGN KEY(vehicle_id)
+                    REFERENCES vehicles_inventory(id)
+                    FOREIGN KEY(job_id)
+                    REFERENCES road_works(id))
+                    """)
+
+    @staticmethod
     def additional():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""
                     CREATE TABLE IF NOT EXISTS additional
                     (job_id INTEGER,
-                    length INTEGER, 
-                    type TEXT, 
+                    length INTEGER,
+                    type TEXT,
                     crew_required INTEGER,
                     FOREIGN KEY(job_id)
                     REFERENCES road_works(id))
@@ -117,7 +130,7 @@ class Insert(object):
     def assigned(item_id, job_id):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
-        cur.execute("INSERT INTO assigned_to VALUES (NULL, ?,?)",
+        cur.execute("INSERT INTO assigned_stock VALUES (NULL, ?,?)",
                     (item_id, job_id))
         conn.commit()
         conn.close()
@@ -154,14 +167,22 @@ class View(object):
         return rows
 
     @staticmethod
-    def assigned():
+    def additional(job_id):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
-        cur.execute("SELECT * FROM assigned_to")
+        cur.execute("SELECT * FROM additional where job_id=?", (job_id,))
         rows = cur.fetchall()
         conn.close()
         return rows
 
+    @staticmethod
+    def assigned():
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM assigned_stock")
+        rows = cur.fetchall()
+        conn.close()
+        return rows
 
 class Search(object):
     """Search table for Roadworks currently works with location"""
@@ -177,6 +198,18 @@ class Search(object):
         conn.close()
         return rows
 
+    @staticmethod
+    def assigned(job_id=""):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM assigned_stock WHERE job_id=?", (job_id,))
+        rows = cur.fetchall()
+        conn.close()
+        return rows
+    """Currently this returns rows of item ids but we want names and amount
+    taken to be returned Then take the weight of each item and multiply it
+    by the amount taken. This will give a total weight so that we can start
+    to see how many vehicle would be needed to put this job out."""
 
 class Delete(object):
     """Delete job, stock, vehicle in original database tables"""
@@ -200,7 +233,15 @@ class Delete(object):
     def vehicle(id):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
-        cur.execute("DELETE FROM vehicle_inventory WHERE id=?", (id,))
+        cur.execute("DELETE FROM vehicles_inventory WHERE id=?", (id,))
+        conn.commit()
+        conn.close()
+
+    @staticmethod
+    def assigned(job_id=""):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("DELETE FROM assigned_stock WHERE job_id=?", (job_id,))
         conn.commit()
         conn.close()
 
