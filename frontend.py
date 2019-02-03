@@ -26,7 +26,6 @@ class GUI:
                 My_Gui.enddate_entry.delete(0, END)
                 My_Gui.enddate_entry.insert(END, selected_roadworks[4])
                 return selected_roadworks
-                whatyougot()
 
             @staticmethod
             def additional(*args):
@@ -73,7 +72,6 @@ class GUI:
                 selected_assigned = My_Gui.assignedlistbox.get(index)
                 return selected_assigned
 
-
         class View(object):
             """View """
 
@@ -101,22 +99,18 @@ class GUI:
                 for row in backend.View.assigned():
                     My_Gui.assignedlistbox.insert(END, row)
 
-
         class Search(object):
             """Search bar and viewing specific data from assigned tables"""
 
             @staticmethod
             def job():
-                My_Gui.joblistbox.delete(0, END)
-                for row in backend.Search.job(search_text.get()):
-                    My_Gui.joblistbox.insert(END, row)
+                pass
 
             @staticmethod
             def assigned():
                 My_Gui.assignedlistbox.delete(0, END)
                 for row in backend.Search.assigned(Selected.job()[0]):
                     My_Gui.assignedlistbox.insert(END, row)
-
 
         class Delete(object):
             """Delete job, stock or vehicle."""
@@ -162,7 +156,7 @@ class GUI:
             @staticmethod
             def stock():
                 backend.Insert.stock(My_Gui.stockname_text.get(), My_Gui.stockamount_text.get(),
-                                    My_Gui.stockweight_text.get(), My_Gui.stockwarning_text.get())
+                                     My_Gui.stockweight_text.get(), My_Gui.stockwarning_text.get())
                 My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
                     My_Gui.stocklistbox.insert(END, row)
@@ -170,7 +164,7 @@ class GUI:
             @staticmethod
             def vehicle():
                 backend.Insert.vehicle(My_Gui.fleet_text.get(), My_Gui.reg_text.get(),
-                                        My_Gui.weight_text.get())
+                                       My_Gui.weight_text.get())
                 My_Gui.vehiclelistbox.delete(0, END)
                 for row in backend.View.vehicle():
                     My_Gui.vehiclelistbox.insert(END, row)
@@ -192,9 +186,9 @@ class GUI:
 
             @staticmethod
             def stock():
-                backend.Update.stock(Selected.stock()[0], My_Gui.itemname_text.get(),
-                                     My_Gui.itemamount_text.get(), My_Gui.itemweight_text.get(),
-                                     My_Gui.itemwarning_text.get())
+                backend.Update.stock(Selected.stock()[0], My_Gui.stockname_text.get(),
+                                     My_Gui.stockamount_text.get(), My_Gui.stockweight_text.get(),
+                                     My_Gui.stockwarning_text.get())
                 My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
                     My_Gui.stocklistbox.insert(END, row)
@@ -221,12 +215,12 @@ class GUI:
                                command=View.job)
         self.view_job.grid(row=1, column=0)
 
-        self.delete_job = Button(window, text= "Delete Job", width= 12,
+        self.delete_job = Button(window, text="Delete Job", width=12,
                                  command=Delete.job)
         self.delete_job.grid(row=2, column=0)
 
-        self.assign_stock = Button(window, text="Assign Stock", width= 12,
-                                command=Assign.stock)
+        self.assign_stock = Button(window, text="Assign Stock", width=12,
+                                   command=Assign.stock)
         self.assign_stock.grid(row=3, column=0)
 
         """UNDER CONSTRUCTION"""
@@ -238,19 +232,19 @@ class GUI:
         self.print_out.grid(row=5, column=0)
 
         self.view_kitlist = Button(window, text="View KitList", width=12,
-                            command =Search.assigned)
-        self.view_kitlist.grid(row=6, column= 0)
+                                   command=Search.assigned)
+        self.view_kitlist.grid(row=6, column=0)
 
         self.delete_assigned = Button(window, text="Delete KitList", width=12,
-                            command =Delete.assigned)
+                                      command=Delete.assigned)
         self.delete_assigned.grid(row=7, column=0)
 
         self.insert_job = Button(window, text="Create Job", width=12,
-                                command=InsertEntry.job)
+                                 command=InsertEntry.job)
         self.insert_job.grid(row=17, column=4)
 
         self.update_job = Button(window, text="Update Job", width=12,
-                                command=Update.job)
+                                 command=Update.job)
         self.update_job.grid(row=18, column=4)
 
         """Main Stock buttons"""
@@ -263,16 +257,16 @@ class GUI:
         self.remove_stock.grid(row=29, column=0)
 
         """Main Vehicle buttons"""
-        self.view_vehicle= Button(window, text="View Vehicle", width=12,
-                                    command=View.vehicle)
+        self.view_vehicle = Button(window, text="View Vehicle", width=12,
+                                   command=View.vehicle)
         self.view_vehicle.grid(row=41, column=0)
 
-        self.create_vehicle= Button(window, text="Add Vehicle", width=12,
-                                    command=InsertEntry.vehicle)
+        self.create_vehicle = Button(window, text="Add Vehicle", width=12,
+                                     command=InsertEntry.vehicle)
         self.create_vehicle.grid(row=45, column=19)
 
         self.remove_vehicle = Button(window, text="Del Vehicle", width=12,
-                                    command=Delete.vehicle)
+                                     command=Delete.vehicle)
         self.remove_vehicle.grid(row=43, column=0)
 
         """List boxes"""
@@ -373,13 +367,12 @@ class GUI:
         """Stock Entry buttons"""
 
         self.create_stock = Button(window, text="Create Stock", width=12,
-                                        command=InsertEntry.stock)
+                                   command=InsertEntry.stock)
         self.create_stock.grid(row=20, column=4)
 
         self.update_stock = Button(window, text="Update Stock", width=12,
-                                        command=Update.stock)
+                                   command=Update.stock)
         self.update_stock.grid(row=21, column=4)
-
 
         """Additional Entry section"""
 
@@ -398,7 +391,7 @@ class GUI:
         self.jobtype_text = StringVar()
         self.jobtype_text.set('Temporary')
         self.jobtype_dropdown = OptionMenu(window, self.jobtype_text,
-                                            *self.additional_types)
+                                           *self.additional_types)
         self.jobtype_dropdown.grid(row=18, column=19)
 
         self.crewrequired_label = Label(window, text="Crew Size")
@@ -408,7 +401,7 @@ class GUI:
         self.crewrequired_entry.grid(row=19, column=19)
 
         self.update_additional = Button(window, text="Update Additional",
-                                               width=16)
+                                        width=16)
         self.update_additional.grid(row=20, column=19)
 
         """Vehicle Entry section"""
@@ -430,6 +423,7 @@ class GUI:
         self.weight_text = StringVar()
         self.weight_entry = Entry(window, textvariable=self.weight_text)
         self.weight_entry.grid(row=43, column=19)
+
 
 window = Tk()
 My_Gui = GUI(window)
