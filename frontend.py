@@ -29,12 +29,6 @@ class GUI:
 
             @staticmethod
             def additional(*args):
-                global selected_additional
-                index = My_Gui.joblistbox.curselection()[0]
-                selelected
-                My_Gui.joblength_entry.delete(0, END)
-                My_Gui.joblength_entry.insert(END, selected_roadworks[0])
-                My_Gui.jobtype_dropdown.insert()
                 pass
 
             @staticmethod
@@ -177,16 +171,16 @@ class GUI:
 
             @staticmethod
             def job():
-                backend.Update.job(My_Gui.location_text.get(),
+                backend.Update.job(selected_roadworks[0], My_Gui.location_text.get(),
                                    My_Gui.client_text.get(), My_Gui.startdate_text.get(),
-                                   My_Gui.enddate_text.get(), Selected.job())
+                                   My_Gui.enddate_text.get())
                 My_Gui.joblistbox.delete(0, END)
                 for row in backend.View.job():
                     My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                backend.Update.stock(Selected.stock()[0], My_Gui.stockname_text.get(),
+                backend.Update.stock(selected_item[0], My_Gui.stockname_text.get(),
                                      My_Gui.stockamount_text.get(), My_Gui.stockweight_text.get(),
                                      My_Gui.stockwarning_text.get())
                 My_Gui.stocklistbox.delete(0, END)
