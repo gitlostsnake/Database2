@@ -264,7 +264,7 @@ class Update(object):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""UPDATE stock_inventory SET name=?,
-                    amount =?, weight =?, warning_level=? WHERE id=?""",
+                    amount=?, weight=?, warning_level=? WHERE id=?""",
                     (name, amount, weight, warning_level, id))
         conn.commit()
         conn.close()

@@ -177,16 +177,16 @@ class GUI:
 
             @staticmethod
             def job():
-                backend.Update.job(My_Gui.location_text.get(),
+                backend.Update.job(selected_roadworks[0], My_Gui.location_text.get(),
                                    My_Gui.client_text.get(), My_Gui.startdate_text.get(),
-                                   My_Gui.enddate_text.get(), Selected.job())
+                                   My_Gui.enddate_text.get())
                 My_Gui.joblistbox.delete(0, END)
                 for row in backend.View.job():
                     My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                backend.Update.stock(Selected.stock()[0], My_Gui.stockname_text.get(),
+                backend.Update.stock(selected_item[0], My_Gui.stockname_text.get(),
                                      My_Gui.stockamount_text.get(), My_Gui.stockweight_text.get(),
                                      My_Gui.stockwarning_text.get())
                 My_Gui.stocklistbox.delete(0, END)
@@ -238,6 +238,10 @@ class GUI:
         self.delete_assigned = Button(window, text="Delete KitList", width=12,
                                       command=Delete.assigned)
         self.delete_assigned.grid(row=7, column=0)
+
+        self.view_assigned = Button(window, text="View assigned stock", width=12,
+                                    command=View.assigned)
+        self.view_assigned.grid(row=8, column=0)
 
         self.insert_job = Button(window, text="Create Job", width=12,
                                  command=InsertEntry.job)
