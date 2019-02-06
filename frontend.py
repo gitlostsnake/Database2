@@ -29,12 +29,6 @@ class GUI:
 
             @staticmethod
             def additional(*args):
-                global selected_additional
-                index = My_Gui.joblistbox.curselection()[0]
-                selelected
-                My_Gui.joblength_entry.delete(0, END)
-                My_Gui.joblength_entry.insert(END, selected_roadworks[0])
-                My_Gui.jobtype_dropdown.insert()
                 pass
 
             @staticmethod

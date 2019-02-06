@@ -184,6 +184,7 @@ class View(object):
         conn.close()
         return rows
 
+
 class Search(object):
     """Search table for Roadworks currently works with location"""
 
@@ -206,10 +207,7 @@ class Search(object):
         rows = cur.fetchall()
         conn.close()
         return rows
-    """Currently this returns rows of item ids but we want names and amount
-    taken to be returned Then take the weight of each item and multiply it
-    by the amount taken. This will give a total weight so that we can start
-    to see how many vehicle would be needed to put this job out."""
+
 
 class Delete(object):
     """Delete job, stock, vehicle in original database tables"""
