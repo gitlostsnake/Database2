@@ -6,7 +6,7 @@ from datetime import datetime
 
 class Connect(object):
     """Connect to job, stock, vehicle and assigned stock tables"""
-    @staticmethod
+
     def job():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
@@ -22,7 +22,7 @@ class Connect(object):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS stock_inventory
-                    (id INTEGER PRIMARY KEY, name TEXT,
+                    (id INTEGER PRIMARY KEY, name TEXT UNIQUE,
                     amount TEXT, weight TEXT, warning_level TEXT)
                     """)
         conn.commit()
@@ -33,8 +33,8 @@ class Connect(object):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS vehicles_inventory
-                     (id INTEGER PRIMARY KEY, FleetNo TEXT,
-                     RegistrationNo TEXT, WeightLimit TEXT)
+                     (id INTEGER PRIMARY KEY, FleetNo TEXT UNIQUE,
+                     RegistrationNo TEXT UNIQUE, WeightLimit TEXT)
                      """)
         conn.commit()
         conn.close()
@@ -47,7 +47,9 @@ class Connect(object):
                     CREATE TABLE IF NOT EXISTS assigned_stock
                     (id INTEGER PRIMARY KEY,
                     item_id INTEGER,
-                    job_id INTEGER, FOREIGN KEY(item_id)
+                    job_id INTEGER,
+                    amount_taken TEXT,
+                    FOREIGN KEY(item_id)
                     REFERENCES stock_inventory(id),
                     FOREIGN KEY(job_id)
                     REFERENCES road_works(id))
@@ -127,14 +129,13 @@ class Insert(object):
         conn.close()
 
     @staticmethod
-    def assigned(item_id, job_id):
+    def assigned(item_id, job_id, amount_taken):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
-        cur.execute("INSERT INTO assigned_stock VALUES (NULL, ?,?)",
-                    (item_id, job_id))
+        cur.execute("INSERT INTO assigned_stock VALUES (NULL, ?,?,?)",
+                    (item_id, job_id, amount_taken))
         conn.commit()
         conn.close()
-
 
 class View(object):
     """View job, stock, vehicle"""
@@ -183,6 +184,7 @@ class View(object):
         rows = cur.fetchall()
         conn.close()
         return rows
+        "Need to add in a search to the job and stock tables to return names"
 
 
 class Search(object):
@@ -203,11 +205,21 @@ class Search(object):
     def assigned(job_id=""):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
-        cur.execute("SELECT * FROM assigned_stock WHERE job_id=?", (job_id,))
+        cur.execute("SELECT item_id FROM assigned_stock WHERE job_id=?", (job_id,))
         rows = cur.fetchall()
         conn.close()
         return rows
 
+    @staticmethod
+    def assigned_test(job_id=""):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("""SELECT * FROM assigned_stock
+                    INNER JOIN stock_inventory ON assigned_stock.item_id = stock_inventory.id
+                    WHERE job_id=?""",(job_id,))
+        rows = cur.fetchall()
+        conn.close()
+        return rows
 
 class Delete(object):
     """Delete job, stock, vehicle in original database tables"""

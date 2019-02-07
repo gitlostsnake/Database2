@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import simpledialog
 import backend
 
 
@@ -11,7 +12,7 @@ class GUI:
 
         class Selected(object):
             """Selected item in the list boxes"""
-
+            "By passing selected_roadworks[0] to db query I could add in the additional entries."
             @staticmethod
             def job(*args):
                 global selected_roadworks
@@ -99,13 +100,13 @@ class GUI:
             @staticmethod
             def job():
                 pass
-
+            "Used to find out whats in the kitlist of a job"
             @staticmethod
             def assigned():
                 My_Gui.assignedlistbox.delete(0, END)
-                for row in backend.Search.assigned(Selected.job()[0]):
-                    My_Gui.assignedlistbox.insert(END, row)
-
+                for row in backend.Search.assigned_test(Selected.job()[0]):
+                    My_Gui.assignedlistbox.insert(END, row[5] + " " + row[4])
+                    """row[5] will be used for ammount taken from oringinal amount"""
         class Delete(object):
             """Delete job, stock or vehicle."""
 
@@ -191,7 +192,8 @@ class GUI:
 
             @staticmethod
             def stock():
-                backend.Insert.assigned(selected_item[0], selected_roadworks[0])
+                amount_taken = simpledialog.askstring("Input Required", "Please input the amount needed")
+                backend.Insert.assigned(selected_item[0], selected_roadworks[0], amount_taken)
                 My_Gui.assignedlistbox.delete(0, END)
                 for row in backend.View.assigned():
                     My_Gui.assignedlistbox.insert(END, row)
