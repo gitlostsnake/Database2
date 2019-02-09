@@ -80,7 +80,8 @@ class GUI:
             def stock():
                 My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
-                    My_Gui.stocklistbox.insert(END, row)
+                    My_Gui.stocklistbox.insert(END, row + "  Available >" )
+                    """row[2] - backend.view.assigned[3]"""
 
             @staticmethod
             def vehicle():
@@ -105,8 +106,8 @@ class GUI:
             def assigned():
                 My_Gui.assignedlistbox.delete(0, END)
                 for row in backend.Search.assigned_test(Selected.job()[0]):
-                    My_Gui.assignedlistbox.insert(END, row[5] + " " + row[4])
-                    """row[5] will be used for ammount taken from oringinal amount"""
+                    My_Gui.assignedlistbox.insert(END, row[5] + " " + row[3])
+
         class Delete(object):
             """Delete job, stock or vehicle."""
 

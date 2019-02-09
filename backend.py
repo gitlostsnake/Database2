@@ -7,6 +7,7 @@ from datetime import datetime
 class Connect(object):
     """Connect to job, stock, vehicle and assigned stock tables"""
 
+    @staticmethod
     def job():
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
@@ -137,6 +138,7 @@ class Insert(object):
         conn.commit()
         conn.close()
 
+
 class View(object):
     """View job, stock, vehicle"""
 
@@ -184,7 +186,6 @@ class View(object):
         rows = cur.fetchall()
         conn.close()
         return rows
-        "Need to add in a search to the job and stock tables to return names"
 
 
 class Search(object):
@@ -278,6 +279,14 @@ class Update(object):
                     (name, amount, weight, warning_level, id))
         conn.commit()
         conn.close()
+
+
+class Math(object):
+
+    @staticmethod
+    def amount():
+        stock_available = stock_inventory.amount - assigned_stock.amount_taken
+
 
 
 """\\\\\\\\\\\\\\\\\\\\\\\\OLD CODE BELOW\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"""
