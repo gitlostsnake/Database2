@@ -80,8 +80,15 @@ class GUI:
             def stock():
                 My_Gui.stocklistbox.delete(0, END)
                 for row in backend.View.stock():
-                    My_Gui.stocklistbox.insert(END, row + "  Available >" )
-                    """row[2] - backend.view.assigned[3]"""
+                    My_Gui.stocklistbox.insert(END, row)
+
+            @staticmethod
+            def test_stock():
+                My_Gui.stocklistbox.delete(0, END)
+                item_id = backend.View.stock()[0]
+                for row in backend.Search.assigned_taken(item_id):
+                    My_Gui.stocklistbox.insert(END, row[5] + row[3]-row[6] +"/" + row[6])
+                    """Trying to show amount assigned / total amount"""
 
             @staticmethod
             def vehicle():
@@ -250,7 +257,7 @@ class GUI:
 
         """Main Stock buttons"""
         self.view_stock = Button(window, text="View Stock", width=12,
-                                 command=View.stock)
+                                 command=View.test_stock)
         self.view_stock.grid(row=25, column=0)
 
         self.remove_stock = Button(window, text="Remove Stock", width=12,

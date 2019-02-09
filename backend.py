@@ -222,6 +222,17 @@ class Search(object):
         conn.close()
         return rows
 
+    @staticmethod
+    def assigned_taken(item_id=""):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("""SELECT * FROM assigned_stock
+                    INNER JOIN stock_inventory ON assigned_stock.item_id = stock_inventory.id
+                    WHERE item_id=?""",(str(item_id,)))
+        rows = cur.fetchall()
+        conn.close()
+        return rows
+
 class Delete(object):
     """Delete job, stock, vehicle in original database tables"""
     @staticmethod
@@ -285,7 +296,8 @@ class Math(object):
 
     @staticmethod
     def amount():
-        stock_available = stock_inventory.amount - assigned_stock.amount_taken
+        pass
+
 
 
 
