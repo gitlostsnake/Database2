@@ -228,7 +228,7 @@ class Search(object):
         cur = conn.cursor()
         cur.execute("""SELECT * FROM assigned_stock
                     INNER JOIN stock_inventory ON assigned_stock.item_id = stock_inventory.id
-                    WHERE item_id=?""",(str(item_id,)))
+                    WHERE item_id=?""",(item_id,))
         rows = cur.fetchall()
         conn.close()
         return rows

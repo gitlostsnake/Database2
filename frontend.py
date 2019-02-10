@@ -85,10 +85,40 @@ class GUI:
             @staticmethod
             def test_stock():
                 My_Gui.stocklistbox.delete(0, END)
-                item_id = backend.View.stock()[0]
-                for row in backend.Search.assigned_taken(item_id):
-                    My_Gui.stocklistbox.insert(END, row[5] + row[3]-row[6] +"/" + row[6])
-                    """Trying to show amount assigned / total amount"""
+                item_ids = backend.View.stock()[0]
+                count = 0
+                id_selected = item_ids[count]
+                run_time = len(item_ids)
+                no_of_assigned = len(backend.View.assigned())
+                while count < no_of_assigned:
+                    for row in backend.Search.assigned_taken(id_selected):
+                        amount_took = int(row[3])
+                        amount_total = int(row[6])
+                        currently_available = amount_total - amount_took
+                        information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
+                        My_Gui.stocklistbox.insert(END, " ".join(information))
+                        count = count + 1
+                    if no_of_assigned <= 0:
+                        My_Gui.stocklistbox.delete(0, END)
+                        for row in backend.View.stock():
+                            My_Gui.stocklistbox.insert(END, row)
+                #My_Gui.stocklistbox.delete(0, END)
+                #item_ids = backend.View.stock()[0]
+                #id_selected = item_ids[0]
+                #run_time = len(item_ids)
+                #no_of_assigned = len(backend.View.assigned())
+                # while run_time <= 0:
+                #for row in backend.Search.assigned_taken(id_selected):
+            #        amount_took = int(row[3])
+        #            amount_total = int(row[6])
+    #                currently_available = amount_total - amount_took
+#                    information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
+#                    My_Gui.stocklistbox.insert(END, " ".join(information))
+                # Current issues with item_id only passing one id to backend.
+#                if no_of_assigned <= 0:
+#                    My_Gui.stocklistbox.delete(0, END)
+#                    for row in backend.View.stock():
+#                        My_Gui.stocklistbox.insert(END, row)
 
             @staticmethod
             def vehicle():
