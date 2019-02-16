@@ -203,6 +203,15 @@ class Search(object):
         return rows
 
     @staticmethod
+    def stock(id=""):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM stock_inventory WHERE id=?",(id,))
+        rows = cur.fetchall()
+        conn.close()
+        return rows
+
+    @staticmethod
     def assigned(job_id=""):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
@@ -229,6 +238,15 @@ class Search(object):
         cur.execute("""SELECT * FROM assigned_stock
                     INNER JOIN stock_inventory ON assigned_stock.item_id = stock_inventory.id
                     WHERE item_id=?""",(item_id,))
+        rows = cur.fetchall()
+        conn.close()
+        return rows
+
+    @staticmethod
+    def stock(id=""):
+        conn = sqlite3.connect("road_works.db")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM stock_inventory WHERE id=?",(id,))
         rows = cur.fetchall()
         conn.close()
         return rows

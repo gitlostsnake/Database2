@@ -84,19 +84,21 @@ class GUI:
 
             @staticmethod
             def test_stock():
-                My_Gui.stocklistbox.delete(0, END)
-                item_ids = backend.View.stock()[0]
+                """NOT FINISHED"""
                 count = 0
-                id_selected = item_ids[count]
+                My_Gui.stocklistbox.delete(0, END)
+                item_ids = backend.View.stock()[count]
                 run_time = len(item_ids)
                 no_of_assigned = len(backend.View.assigned())
-                while count < no_of_assigned:
+                id_selected = int(item_ids[count])
+                while count != run_time:
                     for row in backend.Search.assigned_taken(id_selected):
                         amount_took = int(row[3])
                         amount_total = int(row[6])
                         currently_available = amount_total - amount_took
                         information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
-                        My_Gui.stocklistbox.insert(END, " ".join(information))
+                        debugging = [">>>>Runtime,id,count=", str(run_time), str(item_ids[count]), str(id_selected)]
+                        My_Gui.stocklistbox.insert(END, " ".join(information) +"   |" + " ".join(debugging))
                         count = count + 1
                     if no_of_assigned <= 0:
                         My_Gui.stocklistbox.delete(0, END)
