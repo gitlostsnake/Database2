@@ -242,14 +242,6 @@ class Search(object):
         conn.close()
         return rows
 
-    @staticmethod
-    def stock(id=""):
-        conn = sqlite3.connect("road_works.db")
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM stock_inventory WHERE id=?",(id,))
-        rows = cur.fetchall()
-        conn.close()
-        return rows
 
 class Delete(object):
     """Delete job, stock, vehicle in original database tables"""
