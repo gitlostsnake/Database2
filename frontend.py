@@ -83,15 +83,6 @@ class GUI:
                     My_Gui.stocklistbox.insert(END, row)
 
             @staticmethod
-            def is_item_id(text):
-                if len(text) < 1:
-                    return False
-                for i in range(1):
-                    if not text[i].isdecimal():
-                        return False
-                return True
-
-            @staticmethod
             def test_stock():
                 My_Gui.stocklistbox.delete(0, END)
                 item_ids = backend.View.stock()
@@ -103,35 +94,23 @@ class GUI:
                     My_Gui.stocklistbox.delete(0, END)
                     for row in backend.View.stock():
                         My_Gui.stocklistbox.insert(END, row)
+                else:
+                    while count < max_count:
+                            count = count + 1
+                            past_count = count - 1
+                            for row in backend.Search.assigned_taken([count][0]):
+                                if row[2] == past_count:
+                                    values = My_Gui.stocklistbox.get(END, row[3])
+                                    My_Gui.stocklistbox.delete(0, END)
+                                    My_Gui.stocklistbox.insert(END, values)
+                                else:
+                                    amount_took = int(row[3])
+                                    amount_total = int(row[6])
+                                    currently_available = amount_total - amount_took
+                                    information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
+                                    debugging = [">>>>past_count=", str(past_count), str(count)]
+                                    My_Gui.stocklistbox.insert(END, str(" ") + " ".join(information) + "  |" + " ".join(debugging))
 
-                while count < max_count:
-                    for x in item_ids[count]:
-                        count = count + int(x)
-                        for row in backend.Search.assigned_taken([x][0]):
-                            amount_took = int(row[3])
-                            amount_total = int(row[6])
-                            currently_available = amount_total - amount_took
-                            information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
-                            debugging = [">>>>Runtime,count,id=", str(max_count), str(count), str(item_ids)]
-                            My_Gui.stocklistbox.insert(END, " ".join(information) + "  |" + " ".join(debugging))
-
-                # My_Gui.stocklistbox.delete(0, END)
-                # item_ids = backend.View.stock()[0]
-                # id_selected = item_ids[0]
-                # run_time = len(item_ids)
-                # no_of_assigned = len(backend.View.assigned())
-                # while run_time <= 0:
-                # for row in backend.Search.assigned_taken(id_selected):
-            #        amount_took = int(row[3])
-        #            amount_total = int(row[6])
-    #                currently_available = amount_total - amount_took
-#                    information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
-#                    My_Gui.stocklistbox.insert(END, " ".join(information))
-                # Current issues with item_id only passing one id to backend.
-#                if no_of_assigned <= 0:
-#                    My_Gui.stocklistbox.delete(0, END)
-#                    for row in backend.View.stock():
-#                        My_Gui.stocklistbox.insert(END, row)
 
             @staticmethod
             def vehicle():
