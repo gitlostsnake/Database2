@@ -105,14 +105,15 @@ class GUI:
                         My_Gui.stocklistbox.insert(END, row)
 
                 while count < max_count:
-                        for row in backend.Search.assigned_taken(item_ids[0][count]):
+                    for x in item_ids[count]:
+                        count = count + int(x)
+                        for row in backend.Search.assigned_taken([x][0]):
                             amount_took = int(row[3])
                             amount_total = int(row[6])
                             currently_available = amount_total - amount_took
                             information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
                             debugging = [">>>>Runtime,count,id=", str(max_count), str(count), str(item_ids)]
                             My_Gui.stocklistbox.insert(END, " ".join(information) + "  |" + " ".join(debugging))
-                            count = count + 1
 
                 # My_Gui.stocklistbox.delete(0, END)
                 # item_ids = backend.View.stock()[0]
