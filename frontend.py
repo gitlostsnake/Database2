@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import simpledialog
 import backend
-
+import collections
 
 class GUI:
     """Tkinter"""
@@ -9,6 +9,16 @@ class GUI:
     def __init__(self, master):
         self.master = master
         master.title("TM database")
+
+        class Function():
+            """Used in test stock to try and remove and add duplicates in the stock view"""
+            @staticmethod
+            def has_duplicates(list):
+                value_dict = collections.defaultdict(int)
+                for item in list:
+                    value_dict[item] += 1
+                return any(val >1 for val in value_dict.itervalues())
+
 
         class Selected(object):
             """Selected item in the list boxes"""
@@ -84,6 +94,10 @@ class GUI:
 
             @staticmethod
             def test_stock():
+                """Trying to show stock availability by querying the database
+                and adding the assigned quantity to the total quantity"""
+                # Next will add the warning percentage if amount taken == amount total / warning amount
+                # Send warning to user.. Order more {item}
                 My_Gui.stocklistbox.delete(0, END)
                 item_ids = backend.View.stock()
                 count = 0
@@ -96,13 +110,14 @@ class GUI:
                         My_Gui.stocklistbox.insert(END, row)
                 else:
                     while count < max_count:
-                            count = count + 1
-                            past_count = count - 1
+                        count = count + 1
+                        past_count = count - 1
                             for row in backend.Search.assigned_taken([count][0]):
-                                if row[2] == past_count:
-                                    values = My_Gui.stocklistbox.get(END, row[3])
+                                idlist = []
+                                idlist.append(row[0])
+                                if Function.has_duplicates(idlist):
                                     My_Gui.stocklistbox.delete(0, END)
-                                    My_Gui.stocklistbox.insert(END, values)
+                                    My_Gui.stocklistbox.insert(END, idlist)
                                 else:
                                     amount_took = int(row[3])
                                     amount_total = int(row[6])
