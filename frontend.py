@@ -112,19 +112,19 @@ class GUI:
                     while count < max_count:
                         count = count + 1
                         past_count = count - 1
-                            for row in backend.Search.assigned_taken([count][0]):
-                                idlist = []
-                                idlist.append(row[0])
-                                if Function.has_duplicates(idlist):
-                                    My_Gui.stocklistbox.delete(0, END)
-                                    My_Gui.stocklistbox.insert(END, idlist)
-                                else:
-                                    amount_took = int(row[3])
-                                    amount_total = int(row[6])
-                                    currently_available = amount_total - amount_took
-                                    information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
-                                    debugging = [">>>>past_count=", str(past_count), str(count)]
-                                    My_Gui.stocklistbox.insert(END, str(" ") + " ".join(information) + "  |" + " ".join(debugging))
+                        for row in backend.Search.assigned_taken([count][0]):
+#                             idlist = []
+#                             idlist.append(row[0])
+    #                         if Function.has_duplicates(idlist):
+    #                             My_Gui.stocklistbox.delete(0, END)
+    #                             My_Gui.stocklistbox.insert(END, idlist)
+#                             else:
+                            amount_took = int(row[3])
+                            amount_total = int(row[6])
+                            currently_available = amount_total - amount_took
+                            information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
+                            debugging = [str(count)]
+                            My_Gui.stocklistbox.insert(END, str(" ") + " ".join(information) + "  |" + " ".join(debugging))
 
 
             @staticmethod
