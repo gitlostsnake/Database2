@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import simpledialog
 import backend
 import collections
+import numpy as np
+import pandas as pd
 
 class GUI:
     """Tkinter"""
@@ -55,6 +57,7 @@ class GUI:
                 My_Gui.stockweight_entry.insert(END, selected_item[3])
                 My_Gui.stockwarning_entry.delete(0, END)
                 My_Gui.stockwarning_entry.insert(END, selected_item[4])
+                print(selected_item)
                 return selected_item
 
             @staticmethod
@@ -99,9 +102,6 @@ class GUI:
                 # Next will add the warning percentage if amount taken == amount total / warning amount
                 # Send warning to user.. Order more {item}
                 My_Gui.stocklistbox.delete(0, END)
-                item_ids = backend.View.stock()
-                count = 0
-                max_count = len(item_ids)
                 no_of_assigned = len(backend.View.assigned())
 
                 if no_of_assigned <= 0:
@@ -109,22 +109,79 @@ class GUI:
                     for row in backend.View.stock():
                         My_Gui.stocklistbox.insert(END, row)
                 else:
+
+                    for row in backend.View.stock():
+                        id = row[0]
+                        i = 0
+
+                        total_amount = int(row[2])
+                        amounts = backend.Search.assigned_taken(id)
+                        if len(amounts) > 1:
+                            numbers = []
+
+                            while i < len(amounts):
+                                data = backend.Search.assigned_test(id)
+                                print(data[i][3])
+                                numbers.append(data[i][3])
+                                i += 1
+
+                            total_used = 0
+                            for num in numbers:
+                                total_used = int(num) + int(total_used)
+
+                            available = int(row[2]) - total_used
+                            info = [str(id), row[1], str(available), "/", row[2], row[3], "Warning", str(row[4]), "%"]
+                            My_Gui.stocklistbox.insert(END, " ".join(info))
+                        elif len(amounts) == 0:
+                            info = [str(id), row[1], row[2], "/", row[2], row[3], "Warning", str(row[4]), "%"]
+                            My_Gui.stocklistbox.insert(END, " ".join(info))
+
+                        else:
+                            number = amounts[0]
+                            available = int(row[2]) - int(number[0])
+                            info = [str(id), row[1], str(available), "/", row[2], row[3], "Warning", str(row[4]), "%"]
+                            My_Gui.stocklistbox.insert(END, " ".join(info))
+
+
+
+                            #print(f"Theres more to this {amounts} query than meets the eye..")
+
+
+                    for row in backend.View.assigned():
+                        #print(row)
+                        item_info = backend.Search.stock(row[1])
+                        item_name = item_info[0][1]
+                        amount_taken = row[3]
+                        amount_total = item_info[0][2]
+                        info = [item_name, amount_taken, "/", amount_total]
+
+                        # next need to check how many times an item id shows up.
+                        # My_Gui.stocklistbox.insert(END, " ".join(info))
+                        #print(data)
+                        #i = i+1
+
+
+            @staticmethod
+            def pandaStock():
+                My_Gui.stocklistbox.delete(0, END)
+                assigned_length = len(backend.View.assigned())
+                count = 0
+                item_ids = backend.View.stock()
+                max_count = len(item_ids)
+                if assigned_length <= 0:
+                    My_Gui.stocklistbox.delete(0, END)
+                    for row in backend.View.stock():
+                        My_Gui.stocklistbox.insert(END, row)
+                else:
                     while count < max_count:
                         count = count + 1
-                        past_count = count - 1
-                        for row in backend.Search.assigned_taken([count][0]):
-#                             idlist = []
-#                             idlist.append(row[0])
-    #                         if Function.has_duplicates(idlist):
-    #                             My_Gui.stocklistbox.delete(0, END)
-    #                             My_Gui.stocklistbox.insert(END, idlist)
-#                             else:
-                            amount_took = int(row[3])
-                            amount_total = int(row[6])
-                            currently_available = amount_total - amount_took
-                            information = [row[5], str(currently_available), "/", row[6], row[7], row[8]]
-                            debugging = [str(count)]
-                            My_Gui.stocklistbox.insert(END, str(" ") + " ".join(information) + "  |" + " ".join(debugging))
+                        for df in backend.Search.assigned_taken([count][0]):
+                            My_Gui.stocklistbox.insert(END, df)
+                            print(df)
+                            #print(df.columns)
+                            #print(df.values)
+                            #print(df.describe())
+
 
 
             @staticmethod
@@ -294,12 +351,20 @@ class GUI:
 
         """Main Stock buttons"""
         self.view_stock = Button(window, text="View Stock", width=12,
-                                 command=View.test_stock)
+                                 command=View.stock)
         self.view_stock.grid(row=25, column=0)
 
         self.remove_stock = Button(window, text="Remove Stock", width=12,
                                    command=Delete.stock)
         self.remove_stock.grid(row=29, column=0)
+
+        self.test_stockButton = Button(window, text="Test Stock", width=12,
+                                        command=View.test_stock)
+        self.test_stockButton.grid(row = 34, column=0)
+
+        self.pdStock = Button(window, text="Pd stock", width=12,
+                                    command=View.pandaStock)
+        self.pdStock.grid(row=35, column=0)
 
         """Main Vehicle buttons"""
         self.view_vehicle = Button(window, text="View Vehicle", width=12,

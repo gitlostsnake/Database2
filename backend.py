@@ -1,5 +1,7 @@
 import sqlite3
 from datetime import datetime
+import numpy as np
+import pandas as pd
 
 """Trying to add in OOP"""
 
@@ -137,6 +139,7 @@ class Insert(object):
                     (item_id, job_id, amount_taken))
         conn.commit()
         conn.close()
+        #
 
 
 class View(object):
@@ -221,12 +224,12 @@ class Search(object):
         return rows
 
     @staticmethod
-    def assigned_test(job_id=""):
+    def assigned_test(item_id=""):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
         cur.execute("""SELECT * FROM assigned_stock
                     INNER JOIN stock_inventory ON assigned_stock.item_id = stock_inventory.id
-                    WHERE job_id=?""",(job_id,))
+                    WHERE item_id=?""",(item_id,))
         rows = cur.fetchall()
         conn.close()
         return rows
@@ -235,9 +238,7 @@ class Search(object):
     def assigned_taken(item_id=""):
         conn = sqlite3.connect("road_works.db")
         cur = conn.cursor()
-        cur.execute("""SELECT * FROM assigned_stock
-                    INNER JOIN stock_inventory ON assigned_stock.item_id = stock_inventory.id
-                    WHERE item_id=?""",(item_id,))
+        cur.execute("SELECT amount_taken FROM assigned_stock WHERE item_id=?",(item_id,))
         rows = cur.fetchall()
         conn.close()
         return rows
@@ -300,14 +301,6 @@ class Update(object):
                     (name, amount, weight, warning_level, id))
         conn.commit()
         conn.close()
-
-
-class Math(object):
-
-    @staticmethod
-    def amount():
-        pass
-
 
 
 
