@@ -1,9 +1,8 @@
 from tkinter import *
 from tkinter import simpledialog
 import backend
-import collections
-import numpy as np
-import pandas as pd
+
+
 
 class GUI:
     """Tkinter"""
@@ -11,16 +10,6 @@ class GUI:
     def __init__(self, master):
         self.master = master
         master.title("TM database")
-
-        class Function():
-            """Used in test stock to try and remove and add duplicates in the stock view"""
-            @staticmethod
-            def has_duplicates(list):
-                value_dict = collections.defaultdict(int)
-                for item in list:
-                    value_dict[item] += 1
-                return any(val >1 for val in value_dict.itervalues())
-
 
         class Selected(object):
             """Selected item in the list boxes"""
@@ -130,36 +119,30 @@ class GUI:
                                 total_used = int(num) + int(total_used)
 
                             available = int(row[2]) - total_used
-                            info = [str(id), row[1], str(available), "/", row[2], row[3], "Warning", str(row[4]), "%"]
-                            My_Gui.stocklistbox.insert(END, " ".join(info))
+                            warning_level = int(row[2]) / int(row[4])
+                            print(warning_level)
+                            if available <= warning_level:
+                                warning_info = ["*", str(id), row[1], "*>", str(available), "<*", "/", row[2],
+                                                row[3], str(row[4]), "%", "Stock Warning!"]
+                                Yeah_no = simpledialog.askstring("Stock Warning!", "Last used item under its warning level!")
+                                My_Gui.stocklistbox.insert(END, " ".join(warning_info))
+                                print(Yeah_no)
+
+                            else:
+                                info = [str(id), row[1], str(available), "/", row[2], row[3],
+                                        "Warning", str(row[4]), "%"]
+                                My_Gui.stocklistbox.insert(END, " ".join(info))
                         elif len(amounts) == 0:
-                            info = [str(id), row[1], row[2], "/", row[2], row[3], "Warning", str(row[4]), "%"]
+                            info = [str(id), row[1], row[2], "/", row[2], row[3],
+                                    "Warning", str(row[4]), "%"]
                             My_Gui.stocklistbox.insert(END, " ".join(info))
 
                         else:
                             number = amounts[0]
                             available = int(row[2]) - int(number[0])
-                            info = [str(id), row[1], str(available), "/", row[2], row[3], "Warning", str(row[4]), "%"]
+                            info = [str(id), row[1], str(available), "/", row[2], row[3],
+                                    "Warning", str(row[4]), "%"]
                             My_Gui.stocklistbox.insert(END, " ".join(info))
-
-
-
-                            #print(f"Theres more to this {amounts} query than meets the eye..")
-
-
-                    for row in backend.View.assigned():
-                        #print(row)
-                        item_info = backend.Search.stock(row[1])
-                        item_name = item_info[0][1]
-                        amount_taken = row[3]
-                        amount_total = item_info[0][2]
-                        info = [item_name, amount_taken, "/", amount_total]
-
-                        # next need to check how many times an item id shows up.
-                        # My_Gui.stocklistbox.insert(END, " ".join(info))
-                        #print(data)
-                        #i = i+1
-
 
             @staticmethod
             def pandaStock():
