@@ -1,8 +1,20 @@
 from tkinter import *
 from tkinter import simpledialog
+from tkinter import messagebox
 import backend
+import numpy as np
+import pandas as pd
+from twilio.rest import Client
 
 
+def warning_text(item_name):
+    account_sid = 'AC8109dcee336c71ef1ac637c60808395e'
+    auth_token = '2c343209fe20347a75a660d156ad473b'
+    client = Client(account_sid, auth_token)
+    message = client.messages \
+                .create(
+                    body=f'Your running low on {item_name}.',
+                from_='+447480784818', to='+447496525173')
 
 class GUI:
     """Tkinter"""
@@ -38,15 +50,16 @@ class GUI:
                 global selected_item
                 index = My_Gui.stocklistbox.curselection()[0]
                 selected_item = My_Gui.stocklistbox.get(index)
-                My_Gui.stockname_entry.delete(0, END)
-                My_Gui.stockname_entry.insert(END, selected_item[1])
-                My_Gui.stockamount_entry.delete(0, END)
-                My_Gui.stockamount_entry.insert(END, selected_item[2])
-                My_Gui.stockweight_entry.delete(0, END)
-                My_Gui.stockweight_entry.insert(END, selected_item[3])
-                My_Gui.stockwarning_entry.delete(0, END)
-                My_Gui.stockwarning_entry.insert(END, selected_item[4])
-                print(selected_item)
+                id = selected_item[0]
+                for row in backend.Search.stock(id):
+                    My_Gui.stockname_entry.delete(0, END)
+                    My_Gui.stockname_entry.insert(END, row[1])
+                    My_Gui.stockamount_entry.delete(0, END)
+                    My_Gui.stockamount_entry.insert(END, row[2])
+                    My_Gui.stockweight_entry.delete(0, END)
+                    My_Gui.stockweight_entry.insert(END, row[3])
+                    My_Gui.stockwarning_entry.delete(0, END)
+                    My_Gui.stockwarning_entry.insert(END, row[4])
                 return selected_item
 
             @staticmethod
@@ -80,14 +93,7 @@ class GUI:
 
             @staticmethod
             def stock():
-                My_Gui.stocklistbox.delete(0, END)
-                for row in backend.View.stock():
-                    My_Gui.stocklistbox.insert(END, row)
-
-            @staticmethod
-            def test_stock():
-                """Trying to show stock availability by querying the database
-                and adding the assigned quantity to the total quantity"""
+                """Stock done shows warning """
                 # Next will add the warning percentage if amount taken == amount total / warning amount
                 # Send warning to user.. Order more {item}
                 My_Gui.stocklistbox.delete(0, END)
@@ -98,11 +104,9 @@ class GUI:
                     for row in backend.View.stock():
                         My_Gui.stocklistbox.insert(END, row)
                 else:
-
                     for row in backend.View.stock():
                         id = row[0]
                         i = 0
-
                         total_amount = int(row[2])
                         amounts = backend.Search.assigned_taken(id)
                         if len(amounts) > 1:
@@ -120,21 +124,28 @@ class GUI:
 
                             available = int(row[2]) - total_used
                             warning_level = int(row[2]) / int(row[4])
-                            print(warning_level)
+
                             if available <= warning_level:
-                                warning_info = ["*", str(id), row[1], "*>", str(available), "<*", "/", row[2],
-                                                row[3], str(row[4]), "%", "Stock Warning!"]
-                                Yeah_no = simpledialog.askstring("Stock Warning!", "Last used item under its warning level!")
-                                My_Gui.stocklistbox.insert(END, " ".join(warning_info))
-                                print(Yeah_no)
+                                warning_display = [str(id), row[1],
+                                                str(available), "/", row[2],
+                                                row[3], str(row[4]), "%",
+                                                "  |Stock Warning|"]
+
+                                My_Gui.stocklistbox.insert(END, " ".join(warning_display))
+                                warning_top = [f"{row[1]} Shortage!"]
+                                warning_message = [f"""Need at least {int(warning_level)} to continue without triggering a warning. Message sent to manager"""]
+                                messagebox.showwarning(warning_top[0], warning_message[0])
+                                warning_text(row[1])
+
+
 
                             else:
-                                info = [str(id), row[1], str(available), "/", row[2], row[3],
-                                        "Warning", str(row[4]), "%"]
+                                info = [str(id), row[1], str(available), "/", row[2],
+                                        row[3], str(row[4]), "%"]
                                 My_Gui.stocklistbox.insert(END, " ".join(info))
                         elif len(amounts) == 0:
-                            info = [str(id), row[1], row[2], "/", row[2], row[3],
-                                    "Warning", str(row[4]), "%"]
+                            info = [str(id), row[1], row[2], "/", row[2],
+                                    row[3], str(row[4]), "%"]
                             My_Gui.stocklistbox.insert(END, " ".join(info))
 
                         else:
@@ -145,27 +156,65 @@ class GUI:
                             My_Gui.stocklistbox.insert(END, " ".join(info))
 
             @staticmethod
-            def pandaStock():
+            def test_stock():
+                """Stock done shows warning """
+                # Next will add the warning percentage if amount taken == amount total / warning amount
+                # Send warning to user.. Order more {item}
                 My_Gui.stocklistbox.delete(0, END)
-                assigned_length = len(backend.View.assigned())
-                count = 0
-                item_ids = backend.View.stock()
-                max_count = len(item_ids)
-                if assigned_length <= 0:
+                no_of_assigned = len(backend.View.assigned())
+
+                if no_of_assigned <= 0:
                     My_Gui.stocklistbox.delete(0, END)
                     for row in backend.View.stock():
                         My_Gui.stocklistbox.insert(END, row)
                 else:
-                    while count < max_count:
-                        count = count + 1
-                        for df in backend.Search.assigned_taken([count][0]):
-                            My_Gui.stocklistbox.insert(END, df)
-                            print(df)
-                            #print(df.columns)
-                            #print(df.values)
-                            #print(df.describe())
+                    for row in backend.View.stock():
+                        id = row[0]
+                        i = 0
+                        total_amount = int(row[2])
+                        amounts = backend.Search.assigned_taken(id)
+                        if len(amounts) > 1:
+                            numbers = []
 
+                            while i < len(amounts):
+                                data = backend.Search.assigned_test(id)
+                                print(data[i][3])
+                                numbers.append(data[i][3])
+                                i += 1
 
+                            total_used = 0
+                            for num in numbers:
+                                total_used = int(num) + int(total_used)
+
+                            available = int(row[2]) - total_used
+                            warning_level = int(row[2]) / int(row[4])
+
+                            if available <= warning_level:
+                                warning_display = [str(id), row[1],
+                                                str(available), "/", row[2],
+                                                row[3], str(row[4]), "%",
+                                                "  |Stock Warning!|"]
+
+                                My_Gui.stocklistbox.insert(END, " ".join(warning_display))
+                                warning_top = [f"{row[1]} Shortage!"]
+                                warning_message = [f"""Need at least {int(warning_level)} to continue without triggering a warning. Message sent to manager"""]
+                                messagebox.showwarning(warning_top[0], warning_message[0])
+
+                            else:
+                                info = [str(id), row[1], str(available), "/", row[2],
+                                        row[3], str(row[4]), "%"]
+                                My_Gui.stocklistbox.insert(END, " ".join(info))
+                        elif len(amounts) == 0:
+                            info = [str(id), row[1], row[2], "/", row[2],
+                                    row[3], str(row[4]), "%"]
+                            My_Gui.stocklistbox.insert(END, " ".join(info))
+
+                        else:
+                            number = amounts[0]
+                            available = int(row[2]) - int(number[0])
+                            info = [str(id), row[1], str(available), "/", row[2], row[3],
+                                    "Warning", str(row[4]), "%"]
+                            My_Gui.stocklistbox.insert(END, " ".join(info))
 
             @staticmethod
             def vehicle():
@@ -344,10 +393,6 @@ class GUI:
         self.test_stockButton = Button(window, text="Test Stock", width=12,
                                         command=View.test_stock)
         self.test_stockButton.grid(row = 34, column=0)
-
-        self.pdStock = Button(window, text="Pd stock", width=12,
-                                    command=View.pandaStock)
-        self.pdStock.grid(row=35, column=0)
 
         """Main Vehicle buttons"""
         self.view_vehicle = Button(window, text="View Vehicle", width=12,
