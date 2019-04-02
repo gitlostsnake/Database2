@@ -8,13 +8,13 @@ from twilio.rest import Client
 
 
 def warning_text(item_name):
-    account_sid = 'AC8109dcee336c71ef1ac637c60808395e'
-    auth_token = '2c343209fe20347a75a660d156ad473b'
+    account_sid = ''
+    auth_token = ''
     client = Client(account_sid, auth_token)
     message = client.messages \
                 .create(
                     body=f'Your running low on {item_name}.',
-                from_='+447480784818', to='+447496525173')
+                from_='', to='')
 
 class GUI:
     """Tkinter"""
