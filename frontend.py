@@ -114,7 +114,6 @@ class GUI:
 
                             while i < len(amounts):
                                 data = backend.Search.assigned_test(id)
-                                print(data[i][3])
                                 numbers.append(data[i][3])
                                 i += 1
 
@@ -126,95 +125,51 @@ class GUI:
                             warning_level = int(row[2]) / int(row[4])
 
                             if available <= warning_level:
+
+                                current_percent = total_used / int(row[2]) * 100
+                                percent_inverter = 100 - int(current_percent)
+
                                 warning_display = [str(id), row[1],
                                                 str(available), "/", row[2],
-                                                row[3], str(row[4]), "%",
-                                                "  |Stock Warning|"]
+                                                " !>",
+                                                str(int(percent_inverter)), "%",
+                                                "<!"]
 
                                 My_Gui.stocklistbox.insert(END, " ".join(warning_display))
                                 warning_top = [f"{row[1]} Shortage!"]
                                 warning_message = [f"""Need at least {int(warning_level)} to continue without triggering a warning. Message sent to manager"""]
                                 messagebox.showwarning(warning_top[0], warning_message[0])
-                                warning_text(row[1])
-
-
+                                # warning_text(row[1])
 
                             else:
-                                info = [str(id), row[1], str(available), "/", row[2],
-                                        row[3], str(row[4]), "%"]
-                                My_Gui.stocklistbox.insert(END, " ".join(info))
-                        elif len(amounts) == 0:
-                            info = [str(id), row[1], row[2], "/", row[2],
-                                    row[3], str(row[4]), "%"]
-                            My_Gui.stocklistbox.insert(END, " ".join(info))
+                                current_percent = total_used / int(row[2]) * 100
+                                percent_inverter = 100 - int(current_percent)
 
-                        else:
-                            number = amounts[0]
-                            available = int(row[2]) - int(number[0])
-                            info = [str(id), row[1], str(available), "/", row[2], row[3],
-                                    "Warning", str(row[4]), "%"]
-                            My_Gui.stocklistbox.insert(END, " ".join(info))
-
-            @staticmethod
-            def test_stock():
-                """Stock done shows warning """
-                # Next will add the warning percentage if amount taken == amount total / warning amount
-                # Send warning to user.. Order more {item}
-                My_Gui.stocklistbox.delete(0, END)
-                no_of_assigned = len(backend.View.assigned())
-
-                if no_of_assigned <= 0:
-                    My_Gui.stocklistbox.delete(0, END)
-                    for row in backend.View.stock():
-                        My_Gui.stocklistbox.insert(END, row)
-                else:
-                    for row in backend.View.stock():
-                        id = row[0]
-                        i = 0
-                        total_amount = int(row[2])
-                        amounts = backend.Search.assigned_taken(id)
-                        if len(amounts) > 1:
-                            numbers = []
-
-                            while i < len(amounts):
-                                data = backend.Search.assigned_test(id)
-                                print(data[i][3])
-                                numbers.append(data[i][3])
-                                i += 1
-
-                            total_used = 0
-                            for num in numbers:
-                                total_used = int(num) + int(total_used)
-
-                            available = int(row[2]) - total_used
-                            warning_level = int(row[2]) / int(row[4])
-
-                            if available <= warning_level:
-                                warning_display = [str(id), row[1],
+                                info = [str(id), row[1],
                                                 str(available), "/", row[2],
-                                                row[3], str(row[4]), "%",
-                                                "  |Stock Warning!|"]
+                                                " |",
+                                                str(int(percent_inverter)), "%",
+                                                "| "]
 
-                                My_Gui.stocklistbox.insert(END, " ".join(warning_display))
-                                warning_top = [f"{row[1]} Shortage!"]
-                                warning_message = [f"""Need at least {int(warning_level)} to continue without triggering a warning. Message sent to manager"""]
-                                messagebox.showwarning(warning_top[0], warning_message[0])
-
-                            else:
-                                info = [str(id), row[1], str(available), "/", row[2],
-                                        row[3], str(row[4]), "%"]
                                 My_Gui.stocklistbox.insert(END, " ".join(info))
                         elif len(amounts) == 0:
-                            info = [str(id), row[1], row[2], "/", row[2],
-                                    row[3], str(row[4]), "%"]
+
+                            info = [str(id), row[1],
+                                            row[2], "/", row[2],
+                                            " |",
+                                            "100", "%",
+                                            "| "]
+
                             My_Gui.stocklistbox.insert(END, " ".join(info))
 
                         else:
                             number = amounts[0]
                             available = int(row[2]) - int(number[0])
-                            info = [str(id), row[1], str(available), "/", row[2], row[3],
-                                    "Warning", str(row[4]), "%"]
+                            current_percent = int(available) / int(row[2]) * 100
+                            info = [str(id), row[1], str(available), "/", row[2],
+                                    "|" , str(int(current_percent)), "%", "|"]
                             My_Gui.stocklistbox.insert(END, " ".join(info))
+
 
             @staticmethod
             def vehicle():
@@ -331,6 +286,7 @@ class GUI:
                 My_Gui.assignedlistbox.delete(0, END)
                 for row in backend.View.assigned():
                     My_Gui.assignedlistbox.insert(END, row)
+                View.stock()
 
             @staticmethod
             def vehicle():
@@ -390,9 +346,6 @@ class GUI:
                                    command=Delete.stock)
         self.remove_stock.grid(row=29, column=0)
 
-        self.test_stockButton = Button(window, text="Test Stock", width=12,
-                                        command=View.test_stock)
-        self.test_stockButton.grid(row = 34, column=0)
 
         """Main Vehicle buttons"""
         self.view_vehicle = Button(window, text="View Vehicle", width=12,
