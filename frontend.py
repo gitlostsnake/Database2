@@ -1,11 +1,19 @@
 from tkinter import *
 from tkinter import simpledialog
 from tkinter import messagebox
-import backend
+from backend import Database as database
 import numpy as np
 import pandas as pd
 from twilio.rest import Client
 
+
+"""To do"""
+# {OPTIONAL} have the display boxes show a grid or dataframe with column titles
+# Start working on the additional data tables
+# once additional data has been sorted start adding in a job calculator
+# Once calculator is finished add in option to auto complete
+# Start making charts for visial representation of the data
+# Take the program from tkinter to html css + java
 
 def warning_text(item_name):
     account_sid = ''
@@ -31,6 +39,7 @@ class GUI:
                 global selected_roadworks
                 index = My_Gui.joblistbox.curselection()[0]
                 selected_roadworks = My_Gui.joblistbox.get(index)
+
                 My_Gui.location_entry.delete(0, END)
                 My_Gui.location_entry.insert(END, selected_roadworks[1])
                 My_Gui.client_entry.delete(0, END)
@@ -51,7 +60,7 @@ class GUI:
                 index = My_Gui.stocklistbox.curselection()[0]
                 selected_item = My_Gui.stocklistbox.get(index)
                 id = selected_item[0]
-                for row in backend.Search.stock(id):
+                for row in database.Search.stock(id):
                     My_Gui.stockname_entry.delete(0, END)
                     My_Gui.stockname_entry.insert(END, row[1])
                     My_Gui.stockamount_entry.delete(0, END)
@@ -60,7 +69,7 @@ class GUI:
                     My_Gui.stockweight_entry.insert(END, row[3])
                     My_Gui.stockwarning_entry.delete(0, END)
                     My_Gui.stockwarning_entry.insert(END, row[4])
-                return selected_item
+                    return selected_item
 
             @staticmethod
             def vehicle(*args):
@@ -88,32 +97,31 @@ class GUI:
             @staticmethod
             def job():
                 My_Gui.joblistbox.delete(0, END)
-                for row in backend.View.job():
+                for row in database.View.job():
                     My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
                 """Stock done shows warning """
-                # Next will add the warning percentage if amount taken == amount total / warning amount
-                # Send warning to user.. Order more {item}
+
                 My_Gui.stocklistbox.delete(0, END)
-                no_of_assigned = len(backend.View.assigned())
+                no_of_assigned = len(database.View.assigned())
 
                 if no_of_assigned <= 0:
                     My_Gui.stocklistbox.delete(0, END)
-                    for row in backend.View.stock():
+                    for row in database.View.stock():
                         My_Gui.stocklistbox.insert(END, row)
                 else:
-                    for row in backend.View.stock():
+                    for row in database.View.stock():
                         id = row[0]
                         i = 0
                         total_amount = int(row[2])
-                        amounts = backend.Search.assigned_taken(id)
+                        amounts = database.Search.assigned_taken(id)
                         if len(amounts) > 1:
                             numbers = []
 
                             while i < len(amounts):
-                                data = backend.Search.assigned_test(id)
+                                data = database.Search.assigned_joinitem(id)
                                 numbers.append(data[i][3])
                                 i += 1
 
@@ -137,7 +145,7 @@ class GUI:
 
                                 My_Gui.stocklistbox.insert(END, " ".join(warning_display))
                                 warning_top = [f"{row[1]} Shortage!"]
-                                warning_message = [f"""Need at least {int(warning_level)} to continue without triggering a warning. Message sent to manager"""]
+                                warning_message = [f"""Need more than {int(warning_level)} to continue without triggering a warning. Message sent to manager"""]
                                 messagebox.showwarning(warning_top[0], warning_message[0])
                                 # warning_text(row[1])
 
@@ -152,6 +160,7 @@ class GUI:
                                                 "| "]
 
                                 My_Gui.stocklistbox.insert(END, " ".join(info))
+
                         elif len(amounts) == 0:
 
                             info = [str(id), row[1],
@@ -174,13 +183,13 @@ class GUI:
             @staticmethod
             def vehicle():
                 My_Gui.vehiclelistbox.delete(0, END)
-                for row in backend.View.vehicle():
+                for row in database.View.vehicle():
                     My_Gui.vehiclelistbox.insert(END, row)
 
             @staticmethod
             def assigned():
                 My_Gui.assignedlistbox.delete(0, END)
-                for row in backend.View.assigned():
+                for row in database.View.assigned():
                     My_Gui.assignedlistbox.insert(END, row)
 
         class Search(object):
@@ -193,7 +202,7 @@ class GUI:
             @staticmethod
             def assigned():
                 My_Gui.assignedlistbox.delete(0, END)
-                for row in backend.Search.assigned_test(Selected.job()[0]):
+                for row in database.Search.assigned_kitlist(selected_roadworks[0]):
                     My_Gui.assignedlistbox.insert(END, row[5] + " " + row[3])
 
         class Delete(object):
@@ -201,80 +210,82 @@ class GUI:
 
             @staticmethod
             def job():
-                backend.Delete.job(Selected.job()[0])
+                database.Delete.job(Selected.job()[0])
                 My_Gui.joblistbox.delete(0, END)
-                for row in backend.View.job():
+                for row in database.View.job():
                     My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                backend.Delete.stock(Selected.stock()[0])
+                database.Delete.stock(Selected.stock()[0])
                 My_Gui.stocklistbox.delete(0, END)
-                for row in backend.View.stock():
-                    My_Gui.stocklistbox.insert(END, row)
+                View.stock()
 
             @staticmethod
             def vehicle():
-                backend.Delete.vehicle(Selected.vehicle()[0])
+                database.Delete.vehicle(Selected.vehicle()[0])
                 My_Gui.vehiclelistbox.delete(0, END)
-                for row in backend.View.vehicle():
+                for row in database.View.vehicle():
                     My_Gui.vehiclelistbox.insert(END, row)
 
             @staticmethod
             def assigned():
-                backend.Delete.assigned(Selected.job()[0])
+                database.Delete.assigned(Selected.job()[0])
                 My_Gui.assignedlistbox.delete(0, END)
-                for row in backend.View.assigned():
+                for row in database.View.assigned():
                     My_Gui.assignedlistbox.insert(END, row)
 
         class InsertEntry(object):
 
             @staticmethod
             def job():
-                backend.Insert.job(My_Gui.location_text.get(), My_Gui.client_text.get(),
+                database.Insert.job(My_Gui.location_text.get(), My_Gui.client_text.get(),
                                    My_Gui.startdate_text.get(), My_Gui.enddate_text.get())
                 My_Gui.joblistbox.delete(0, END)
-                for row in backend.View.job():
+                for row in database.View.job():
                     My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                backend.Insert.stock(My_Gui.stockname_text.get(), My_Gui.stockamount_text.get(),
+                database.Insert.stock(My_Gui.stockname_text.get(), My_Gui.stockamount_text.get(),
                                      My_Gui.stockweight_text.get(), My_Gui.stockwarning_text.get())
                 My_Gui.stocklistbox.delete(0, END)
-                for row in backend.View.stock():
-                    My_Gui.stocklistbox.insert(END, row)
+                View.stock()
 
             @staticmethod
             def vehicle():
-                backend.Insert.vehicle(My_Gui.fleet_text.get(), My_Gui.reg_text.get(),
+                database.Insert.vehicle(My_Gui.fleet_text.get(), My_Gui.reg_text.get(),
                                        My_Gui.weight_text.get())
                 My_Gui.vehiclelistbox.delete(0, END)
-                for row in backend.View.vehicle():
+                for row in database.View.vehicle():
                     My_Gui.vehiclelistbox.insert(END, row)
 
             @staticmethod
             def additional():
-                pass
+                database.Insert.additional(selected_roadworks[0], My_Gui.joblength_text.get(),
+                                    My_Gui.jobtype_text.get(), My_Gui.crewrequired_text.get(),
+                                    My_Gui.shift_type_text.get())
+                print(database.View.additional())
+
 
         class Update(object):
 
             @staticmethod
             def job():
-                backend.Update.job(selected_roadworks[0], My_Gui.location_text.get(),
+                database.Update.job(selected_roadworks[0], My_Gui.location_text.get(),
                                    My_Gui.client_text.get(), My_Gui.startdate_text.get(),
                                    My_Gui.enddate_text.get())
                 My_Gui.joblistbox.delete(0, END)
-                for row in backend.View.job():
+                for row in database.View.job():
                     My_Gui.joblistbox.insert(END, row)
 
             @staticmethod
             def stock():
-                backend.Update.stock(selected_item[0], My_Gui.stockname_text.get(),
+                database.Update.stock(selected_item[0], My_Gui.stockname_text.get(),
                                      My_Gui.stockamount_text.get(), My_Gui.stockweight_text.get(),
                                      My_Gui.stockwarning_text.get())
                 My_Gui.stocklistbox.delete(0, END)
-                for row in backend.View.stock():
+                for row in database.View.stock():
                     My_Gui.stocklistbox.insert(END, row)
 
         class Assign(object):
@@ -282,9 +293,9 @@ class GUI:
             @staticmethod
             def stock():
                 amount_taken = simpledialog.askstring("Input Required", "Please input the amount needed")
-                backend.Insert.assigned(selected_item[0], selected_roadworks[0], amount_taken)
+                database.Insert.assigned(selected_item[0], selected_roadworks[0], amount_taken)
                 My_Gui.assignedlistbox.delete(0, END)
-                for row in backend.View.assigned():
+                for row in database.View.assigned():
                     My_Gui.assignedlistbox.insert(END, row)
                 View.stock()
 
@@ -491,9 +502,18 @@ class GUI:
         self.crewrequired_entry = Entry(window, textvariable=self.crewrequired_text)
         self.crewrequired_entry.grid(row=19, column=19)
 
+        self.additional_shift_label = Label(window, text="Shift")
+        self.additional_shift_label.grid(row=20, column=18)
+        self.additional_shift = {'Day 6am-6pm', 'Night 6pm-6am', 'Day + Night'}
+        self.shift_type_text = StringVar()
+        self.shift_type_text.set('Day 6am-6pm')
+        self.shift_type_dropdown = OptionMenu(window, self.shift_type_text,
+                                           *self.additional_shift)
+        self.shift_type_dropdown.grid(row=20, column=19)
+
         self.update_additional = Button(window, text="Update Additional",
-                                        width=16)
-        self.update_additional.grid(row=20, column=19)
+                                        width=16, command=InsertEntry.additional)
+        self.update_additional.grid(row=21, column=19)
 
         """Vehicle Entry section"""
 
