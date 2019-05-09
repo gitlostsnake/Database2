@@ -33,7 +33,6 @@ class GUI:
 
         class Selected(object):
             """Selected item in the list boxes"""
-            "By passing selected_roadworks[0] to db query I could add in the additional entries."
             @staticmethod
             def job(*args):
                 global selected_roadworks
@@ -117,7 +116,7 @@ class GUI:
                         i = 0
                         total_amount = int(row[2])
                         amounts = database.Search.assigned_taken(id)
-                        if len(amounts) > 1:
+                        if len(amounts) >= 1:
                             numbers = []
 
                             while i < len(amounts):
@@ -147,6 +146,9 @@ class GUI:
                                 warning_top = [f"{row[1]} Shortage!"]
                                 warning_message = [f"""Need more than {int(warning_level)} to continue without triggering a warning. Message sent to manager"""]
                                 messagebox.showwarning(warning_top[0], warning_message[0])
+                                # The next line is how the program will send texts to users
+                                # print("YOU NEED TO ADD IN YOUR OWN DETAILS line 19-20 for texts to work")
+                                # print("Also uncomment out line 153")
                                 # warning_text(row[1])
 
                             else:

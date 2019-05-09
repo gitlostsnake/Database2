@@ -67,6 +67,7 @@ class Database:
     class Insert:
         """Insert job, stock or vehicle"""
         def __init__(self):
+            print("Inserting ...")
             db.cur = db.conn.cursor()
 
         def job(location, client, start_date, end_date):
@@ -110,26 +111,31 @@ class Database:
         def job():
             db.cur.execute("SELECT * FROM road_works")
             rows = db.cur.fetchall()
+            print("Viewing Job's ...")
             return rows
 
         def stock():
             db.cur.execute("SELECT * FROM stock_inventory")
             rows = db.cur.fetchall()
+            print("Viewing Stock ...")
             return rows
 
         def vehicle():
             db.cur.execute("SELECT * FROM vehicles_inventory")
             rows = db.cur.fetchall()
+            print("Viewing Vehicles ...")
             return rows
 
         def additional():
             db.cur.execute("SELECT * FROM additional")
             rows = db.cur.fetchall()
+            print("Viewing Additional ...")
             return rows
 
         def assigned():
             db.cur.execute("SELECT * FROM assigned_stock")
             rows = db.cur.fetchall()
+            print("Viewing Assigned stock ...")
             return rows
 
 
@@ -188,11 +194,11 @@ class Database:
 
     class Delete(object):
         """Delete job, stock, vehicle in original database tables"""
-        @staticmethod
+        def __init__():
+            db.cur = db.conn.cursor()
+
         def job(id):
-            conn = sqlite3.connect("road_works.db")
-            cur = conn.cursor()
-            cur.execute("DELETE FROM road_works WHERE id=?", (id,))
+            db.cur.execute("DELETE FROM road_works WHERE id=?", (id,))
             conn.commit()
             conn.close()
 
