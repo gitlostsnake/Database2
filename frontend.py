@@ -537,6 +537,36 @@ class GUI:
         self.weight_entry = Entry(window, textvariable=self.weight_text)
         self.weight_entry.grid(row=43, column=19)
 
+        """Location """
+
+        self.mp_label = Label(window, text='Search Marker Post')
+        self.mp_label.grid(row=1, column=25)
+        self.mp_text = StringVar()
+        self.mp_entry = Entry(window, textvariable=self.mp_text)
+        self.mp_entry.grid(row=1, column=26)
+
+        self.bound_label = Label(window, text='AL / TL')
+        self.bound_label.grid(row=2, column=25)
+        self.bound_options = {'North bound', 'South bound'}
+        self.bound_text = StringVar()
+        self.bound_dropdown = OptionMenu(window, self.bound_text,
+                                        *self.bound_options)
+        self.bound_dropdown.grid(row=2, column=26)
+
+
+        self.area_label = Label(window, text='Area')
+        self.area_label.grid(row=3, column=25)
+        self.area_options = {'Area1', 'Area2', 'Area3', 'Area4', 'Area5','Area6',
+                            'Area7', 'Area8', 'Area9', 'Area10', 'Area11' ,'Area12',
+                            'Area13', 'Area14'}
+        self.area_text = StringVar()
+        self.area_dropdown = OptionMenu(window, self.area_text,
+                                        *self.area_options)
+        self.area_dropdown.grid(row=3, column=26)
+
+        self.findmp_button = Button(window, text="Search")
+        self.findmp_button.grid(row=4, column=26)
+
 
 window = Tk()
 My_Gui = GUI(window)
