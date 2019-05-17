@@ -5,6 +5,7 @@ from backend import Database as database
 import numpy as np
 import pandas as pd
 from twilio.rest import Client
+from map1 import findmp as mplocator
 
 
 """To do"""
@@ -14,6 +15,15 @@ from twilio.rest import Client
 # Once calculator is finished add in option to auto complete
 # Start making charts for visial representation of the data
 # Take the program from tkinter to html css + java
+"Find markerpost and put it on a folium map"
+def roadlocation():
+    mplocator(My_Gui.mp_text.get(), My_Gui.bound_text.get(),
+              My_Gui.area_text.get())
+    print(My_Gui.mp_text.get())
+    print(My_Gui.bound_text.get())
+    print(My_Gui.area_text.get())
+
+
 
 def warning_text(item_name):
     account_sid = ''
@@ -206,6 +216,7 @@ class GUI:
                 My_Gui.assignedlistbox.delete(0, END)
                 for row in database.Search.assigned_kitlist(selected_roadworks[0]):
                     My_Gui.assignedlistbox.insert(END, row[5] + " " + row[3])
+
 
         class Delete(object):
             """Delete job, stock or vehicle."""
@@ -556,15 +567,16 @@ class GUI:
 
         self.area_label = Label(window, text='Area')
         self.area_label.grid(row=3, column=25)
-        self.area_options = {'Area1', 'Area2', 'Area3', 'Area4', 'Area5','Area6',
-                            'Area7', 'Area8', 'Area9', 'Area10', 'Area11' ,'Area12',
-                            'Area13', 'Area14'}
+        self.area_options = ['AREA1', 'AREA2', 'AREA3', 'AREA4', 'AREA5','AREA6',
+                            'AREA7', 'AREA8', 'AREA9', 'AREA10', 'AREA11' ,'AREA12',
+                            'AREA13', 'AREA14']
         self.area_text = StringVar()
         self.area_dropdown = OptionMenu(window, self.area_text,
                                         *self.area_options)
         self.area_dropdown.grid(row=3, column=26)
 
-        self.findmp_button = Button(window, text="Search")
+        self.findmp_button = Button(window, text="Search",
+                                    command = roadlocation)
         self.findmp_button.grid(row=4, column=26)
 
 
