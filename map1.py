@@ -1,6 +1,5 @@
 import folium
 import pandas as pd
-import codecs
 import webbrowser
 
 data = pd.read_csv("roadlocationdata.csv")
@@ -10,6 +9,7 @@ lon = list(data["lng"])
 markerpostlist = list(data["BD"])
 area = list(data["Area"])
 fg = folium.FeatureGroup(name="My Map")
+
 
 def findmp(markernumber, bound, area):
     """
@@ -23,7 +23,6 @@ def findmp(markernumber, bound, area):
     else:
         last.append("B")
 
-    print(last)
     markerpost = str("P" + markernumber + last[0])
     markerpostfound = data[data.BD == markerpost]
     print(markerpostfound)
@@ -38,47 +37,11 @@ def findmp(markernumber, bound, area):
     lon = list(bingo['lng'])
     markerp = list(bingo['BD'])
     for lt, ln, mp in zip(lat,lon, markerp):
-        fg.add_child(folium.Marker(location=[lt,ln], popup=(str(lt) +' '+ str(ln)), icon=folium.Icon(color='red')))
+        fg.add_child(folium.Marker(location=[lt, ln], popup=(str(lt) + ',' + str(ln)), icon=folium.Icon(color='red')))
         map.save("Map1.html")
         """This saves all the markerposts to one map..."""
     webbrowser.open_new_tab("Map1.html")
 
-
-
-
-
-
-
-
-def findmp21(markerpost, bound, area):
-    if bound == "North Bound":
-        Last = "A"
-        search = df.loc[df['BD'] == str("P"+ markerpost + Last) & df['Area'] == area]
-    else:
-        Last = "B"
-        search = df.loc[df['BD'] == str("P"+ markerpost + Last) & df['Area'] == area]
-
-
-    if len(search) > 1:
-        print("Marker posts found!!!")
-        print(search)
-        lat = list(search['lat'])
-        lon = list(search['lng'])
-        markerp = list(search['BD'])
-        for lt, ln, mp in zip(lat,lon, markerp):
-            fg.add_child(folium.Marker(location=[lt,ln], popup=(str(lt) +' '+ str(ln)), icon=folium.Icon(color='red')))
-
-    elif len(search) == 0:
-        print("No markerposts found... ")
-
-    else:
-        print("One of a kind")
-        lat= list(search['lat'])
-        lon= list(search['lng'])
-        markerp = list(search['BD'])
-        for lt, ln, mp in zip(lat,lon, markerp):
-            fg.add_child(folium.Marker(location=[lt,ln], popup=str(mp)+ str(lt,ln),
-                                        icon=folium.Icon(color='green')))
 
 map = folium.Map(location=[54.880268, -1.560417], zoom_start=8)
 
@@ -87,3 +50,5 @@ map = folium.Map(location=[54.880268, -1.560417], zoom_start=8)
 
 map.add_child(fg)
 print("Map ready")
+
+

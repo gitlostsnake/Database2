@@ -2,8 +2,6 @@ from tkinter import *
 from tkinter import simpledialog
 from tkinter import messagebox
 from backend import Database as database
-import numpy as np
-import pandas as pd
 from twilio.rest import Client
 from map1 import findmp as mplocator
 
@@ -16,13 +14,14 @@ from map1 import findmp as mplocator
 # Start making charts for visial representation of the data
 # Take the program from tkinter to html css + java
 "Find markerpost and put it on a folium map"
+
+
 def roadlocation():
     mplocator(My_Gui.mp_text.get(), My_Gui.bound_text.get(),
               My_Gui.area_text.get())
     print(My_Gui.mp_text.get())
     print(My_Gui.bound_text.get())
     print(My_Gui.area_text.get())
-
 
 
 def warning_text(item_name):
@@ -32,7 +31,8 @@ def warning_text(item_name):
     message = client.messages \
                 .create(
                     body=f'Your running low on {item_name}.',
-                from_='', to='')
+                    from_='', to='')
+
 
 class GUI:
     """Tkinter"""
@@ -564,20 +564,41 @@ class GUI:
                                         *self.bound_options)
         self.bound_dropdown.grid(row=2, column=26)
 
-
         self.area_label = Label(window, text='Area')
         self.area_label.grid(row=3, column=25)
-        self.area_options = ['AREA1', 'AREA2', 'AREA3', 'AREA4', 'AREA5','AREA6',
-                            'AREA7', 'AREA8', 'AREA9', 'AREA10', 'AREA11' ,'AREA12',
-                            'AREA13', 'AREA14']
+        self.area_options = ['AREA1', 'AREA2', 'AREA3', 'AREA4', 'AREA5', 'AREA6',
+                             'AREA7', 'AREA8', 'AREA9', 'AREA10', 'AREA11', 'AREA12',
+                             'AREA13', 'AREA14']
         self.area_text = StringVar()
         self.area_dropdown = OptionMenu(window, self.area_text,
                                         *self.area_options)
         self.area_dropdown.grid(row=3, column=26)
 
         self.findmp_button = Button(window, text="Search",
-                                    command = roadlocation)
+                                    command=roadlocation)
         self.findmp_button.grid(row=4, column=26)
+
+        """Job plotter section"""
+
+        self.job_plot_label = Label(window, text='plot a job')
+        self.job_plot_label.grid(row=6, column=25)
+        self.job_coords_label = Label(window, text='using coordinates for')
+        self.job_coords_label.grid(row=6, column=26)
+        self.job_using_label = Label(window, text='taper location')
+        self.job_using_label.grid(row=7, column=25)
+
+        self.coords_text = StringVar()
+        self.coords_entry = Entry(window, textvariable= self.coords_text)
+        self.coords_entry.grid(row=7, column=26)
+        self.end_inkm_label = Label(window, text='length in km')
+        self.end_inkm_label.grid(row=8, column=25)
+        self.end_inkm_text = StringVar()
+        self.end_inkm_entry = Entry(window, textvariable=self.end_inkm_text)
+        self.end_inkm_entry.grid(row=8, column=26)
+
+        self.plot_button = Button(window, text='Add to map')
+        self.plot_button.grid(row=9, column=26)
+
 
 
 window = Tk()
