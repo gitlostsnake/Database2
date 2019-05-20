@@ -13,7 +13,7 @@ from map1 import findmp as mplocator
 # Once calculator is finished add in option to auto complete
 # Start making charts for visial representation of the data
 # Take the program from tkinter to html css + java
-"Find markerpost and put it on a folium map"
+"Find markerpost and put it on a folium map DONE"
 
 
 def roadlocation():

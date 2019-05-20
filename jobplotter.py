@@ -27,17 +27,14 @@ def advanced_warning_signs(lat, lon):
     bound = taper_marker[0][-1]
     middlepoint = taper_marker[0][1:-1]
 
-
     x, y = [int(num) for num in taper_marker[0][1:-1].split('/')]
+
     if taper_marker[0][-1] == 'A':
         # Taper is on a northbound or away from london road..
         # So warning signs will be on on a markerpost with lower numbers
         # And the end of works will be on a higher number because it is further
         # from London..
         for num in range(5):
-            plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
-            markerlist.append(''.join(plot))
-            print(markerlist)
 
             if y <= 0:
                 x -= 1
@@ -51,7 +48,6 @@ def advanced_warning_signs(lat, lon):
                 print(f"One mile goes at {one_mile}/{y}")
                 plot = str(taper_marker[0][0]),str(one_mile),'/',str(y),str(taper_marker[0][-1])
                 last_two_m.append(''.join(plot))
-                print(last_two_m)
 
             elif num == 4:
                 print("At the 800s now")
@@ -60,22 +56,24 @@ def advanced_warning_signs(lat, lon):
                 print(f"Work force goes at {work_force}/{y}")
                 plot = str(taper_marker[0][0]),str(work_force),'/',str(y),str(taper_marker[0][-1])
                 last_two_m.append(''.join(plot))
+
+            plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
+            markerlist.append(''.join(plot))
+            print(markerlist)
             y -= 2
 
     else:
         # Taper is on a southbound or towards london road
         # everything in reverse to the if statement
         for num in range(5):
-            plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
-            markerlist.append(''.join(plot))
-            print(markerlist)
-
 
             if y >= 10:
                 x += 1
                 y -= 10
                 print("y is too big ...")
                 print(f"Now this block is ran so x ={x} and y ={y}")
+                plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
+                markerlist.append(''.join(plot))
 
             elif num == 3:
                 print("At the 600s now")
@@ -92,6 +90,9 @@ def advanced_warning_signs(lat, lon):
                 plot = str(taper_marker[0][0]),str(work_force),'/',str(y),str(taper_marker[0][-1])
                 last_two_m.append(''.join(plot))
 
+            plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
+            markerlist.append(''.join(plot))
+            print(markerlist)
             y += 2
 
     """Now to add them to a folium map...."""
@@ -103,7 +104,7 @@ def advanced_warning_signs(lat, lon):
         lon = list(newdata['lng'])
         for lt, ln in zip(lat, lon):
             print(f"{sign} at {marker} lat/lon {lat}{lon} will be {color} on the map..")
-            fg.add_child(folium.Marker(location=[lt, ln], popup=(str(f"{sign}\n{marker}")), icon=folium.Icon(color='red')))
+            fg.add_child(folium.Marker(location=[lt, ln], popup=(str(f"{sign}\n{marker}")), icon=folium.Icon(color=color)))
             map.save("Map1.html")
 
     """Add the last two signs to the map"""
@@ -136,4 +137,4 @@ def advanced_warning_signs(lat, lon):
 #     print(f"Taper is on the {taper_road[0]} road")
 map = folium.Map(location=[54.880268, -1.560417], zoom_start=8)
 map.add_child(fg)
-advanced_warning_signs(54.558565,-1.591621)
+advanced_warning_signs(53.401101000000004,-2.796735)
