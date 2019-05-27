@@ -18,11 +18,11 @@ last_two_c = ['green', 'green']
 last_two_m = []
 "Work area to plot"
 worksmarkerlist = []
-access_signs_l = ['Access 100', 'Works access']
+access_signs_l = ['Access 100\nsafety zone END', 'Works access']
 access_color_l = ['purple', 'purple']
 access_markerposts_l = []
 "Dead zone is inside the lat safety from front arrow"
-deadzone_markerpost_l =[]
+deadzone_markerpost_l = []
 
 # lat and lon have to be floats to work so far..
 # take taper location and work backwards to get sign locations
@@ -90,6 +90,7 @@ def advanced_warning_signs(lat, lon, len):
         print(f"Job end is {len} away from {taper_marker}")
         jobmarkerps = len * 10
         print(f"Thats {int(jobmarkerps)} points on the map away from taper after plotting access and 100")
+
         x, y = [int(num) for num in taper_marker[0][1:-1].split('/')]
 
         for num in range(int(jobmarkerps)):
@@ -98,13 +99,13 @@ def advanced_warning_signs(lat, lon, len):
                 x += 1
                 y -= 10
 
-            if num == 1:
+            elif num == 1:
                 print("Markerpost is inside the safety zone so it wont be plotted to map..")
                 print(x, '/', y)
                 plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
                 deadzone_markerpost_l.append(''.join(plot))
 
-            if num == 2:
+            elif num == 2:
                 print(f"Works access 100 is here")
                 print(x, "/", y)
                 plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
@@ -176,13 +177,13 @@ def advanced_warning_signs(lat, lon, len):
                 x -= 1
                 y += 10
 
-            if num == 1:
+            elif num == 1:
                 print("Markerpost is inside the safety zone so it wont be plotted to map..")
                 print(x, '/', y)
                 plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
                 deadzone_markerpost_l.append(''.join(plot))
 
-            if num == 2:
+            elif num == 2:
                 print(f"Works access 100 is here")
                 print(x, "/", y)
                 plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
@@ -278,4 +279,4 @@ def advanced_warning_signs(lat, lon, len):
 #     print(f"Taper is on the {taper_road[0]} road")
 map = folium.Map(location=[54.880268, -1.560417], zoom_start=8)
 map.add_child(fg)
-advanced_warning_signs(54.56758000000001,-1.581401, 3.5)
+advanced_warning_signs(54.478806999999996,-1.649548, 4.5)
