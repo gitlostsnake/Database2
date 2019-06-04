@@ -111,31 +111,31 @@ class Database:
         def job():
             db.cur.execute("SELECT * FROM road_works")
             rows = db.cur.fetchall()
-            print("Viewing Job's ...")
+            print("|Viewing Job's| ...")
             return rows
 
         def stock():
             db.cur.execute("SELECT * FROM stock_inventory")
             rows = db.cur.fetchall()
-            print("Viewing Stock ...")
+            print("|Viewing Stock| ...")
             return rows
 
         def vehicle():
             db.cur.execute("SELECT * FROM vehicles_inventory")
             rows = db.cur.fetchall()
-            print("Viewing Vehicles ...")
+            print("|Viewing Vehicles| ...")
             return rows
 
         def additional():
             db.cur.execute("SELECT * FROM additional")
             rows = db.cur.fetchall()
-            print("Viewing Additional ...")
+            print("|Viewing Additional| ...")
             return rows
 
         def assigned():
             db.cur.execute("SELECT * FROM assigned_stock")
             rows = db.cur.fetchall()
-            print("Viewing Assigned stock ...")
+            print("|Viewing Assigned stock| ...")
             return rows
 
 
@@ -199,33 +199,22 @@ class Database:
 
         def job(id):
             db.cur.execute("DELETE FROM road_works WHERE id=?", (id,))
-            conn.commit()
-            conn.close()
+            db.conn.commit()
+            print("-|Deleting job|")
 
-        @staticmethod
+
         def stock(id):
-            conn = sqlite3.connect("road_works.db")
-            cur = conn.cursor()
-            cur.execute("DELETE FROM stock_inventory WHERE id=?", (id,))
-            conn.commit()
-            conn.close()
-
-        @staticmethod
+            db.cur.execute("DELETE FROM stock_inventory WHERE id=?", (id,))
+            db.conn.commit()
+            print("-|Deleting stock|")
         def vehicle(id):
-            conn = sqlite3.connect("road_works.db")
-            cur = conn.cursor()
-            cur.execute("DELETE FROM vehicles_inventory WHERE id=?", (id,))
-            conn.commit()
-            conn.close()
-
-        @staticmethod
+            db.cur.execute("DELETE FROM vehicles_inventory WHERE id=?", (id,))
+            db.conn.commit()
+            print("-|Deleting vehicle|")
         def assigned(job_id=""):
-            conn = sqlite3.connect("road_works.db")
-            cur = conn.cursor()
-            cur.execute("DELETE FROM assigned_stock WHERE job_id=?", (job_id,))
-            conn.commit()
-            conn.close()
-
+            db.cur.execute("DELETE FROM assigned_stock WHERE job_id=?", (job_id,))
+            db.conn.commit()
+            print("-|Deleting assigned stock|")
 
     class Update(object):
 

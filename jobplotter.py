@@ -46,7 +46,7 @@ def advanced_warning_signs(lat, lon, len):
         # from London..
         for num in range(5):
 
-            if y <= 0:
+            if y < 0:
                 x -= 1
                 y += 10
                 print("/////////////////////////////////////////////////////////////////////")
@@ -71,6 +71,7 @@ def advanced_warning_signs(lat, lon, len):
                 print(f"Work force goes at {work_force}/{y}")
                 plot = str(taper_marker[0][0]),str(work_force),'/',str(y),str(taper_marker[0][-1])
                 last_two_m.append(''.join(plot))
+                print(last_two_m)
 
             plot = str(taper_marker[0][0]),str(x),'/',str(y),str(taper_marker[0][-1])
             markerlist.append(''.join(plot))
@@ -207,7 +208,8 @@ def advanced_warning_signs(lat, lon, len):
         lon = list(newdata['lng'])
 
         for lt, ln in zip(lat, lon):
-            fg.add_child(folium.Marker(location=[lt, ln], popup=(str(f"{marker}")), icon=folium.Icon(color='orange')))
+            fg.add_child(folium.CircleMarker(location=[lt, ln], radius = 6, popup=(str(f"{marker}")),
+            fill_color='orange', color = 'grey', fill_opacity=0.7))
             map.save("Map1.html")
 
     """Now to add them to a folium map...."""
@@ -279,4 +281,4 @@ def advanced_warning_signs(lat, lon, len):
 #     print(f"Taper is on the {taper_road[0]} road")
 map = folium.Map(location=[54.880268, -1.560417], zoom_start=8)
 map.add_child(fg)
-advanced_warning_signs(54.478806999999996,-1.649548, 4.5)
+advanced_warning_signs(54.278729000000006,-2.670054, 8.2)

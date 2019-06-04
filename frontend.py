@@ -14,7 +14,8 @@ from map1 import findmp as mplocator
 # Start making charts for visial representation of the data
 # Take the program from tkinter to html css + java
 "Find markerpost and put it on a folium map DONE"
-
+def open_map():
+    new_window = tk.Toplevel(map)
 
 def roadlocation():
     mplocator(My_Gui.mp_text.get(), My_Gui.bound_text.get(),
@@ -599,6 +600,25 @@ class GUI:
         self.plot_button = Button(window, text='Add to map')
         self.plot_button.grid(row=9, column=26)
 
+
+        """Add custom marker onto map"""
+        self.edit_map_label = Label(window, text='Edit map')
+        self.edit_map_label.grid(row=16, column=25)
+
+        self.custom_markers = ['Splitter', 'Merge', 'push', 'rejoin', 'other']
+        self.markers_text  = StringVar()
+        self.markers_dropdown = OptionMenu(window, self.markers_text,
+                                            *self.custom_markers)
+        self.markers_dropdown.grid(row=17, column=26)
+
+        self.custom_mp_text = StringVar()
+        self.custom_mp_entry = Entry(window, text=self.custom_mp_text)
+        self.custom_mp_entry.grid(row=18,column=26)
+        self.custom_mp_label = Label(window, text='location mp')
+        self.custom_mp_label.grid(row=18, column=25)
+
+        self.open_map_button = Button(window, text='Open Map', command=open_map)
+        self.open_map_button.grid(row=19, column=26)
 
 
 window = Tk()
