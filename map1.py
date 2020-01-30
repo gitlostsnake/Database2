@@ -1,6 +1,7 @@
 import folium
 import pandas as pd
 import webbrowser
+# A and B roads are switched on the m5
 
 data = pd.read_csv("roadlocationdata.csv")
 df = pd.DataFrame(data)

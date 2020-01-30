@@ -4,6 +4,7 @@ from tkinter import messagebox
 from backend import Database as database
 from twilio.rest import Client
 from map1 import findmp as mplocator
+from jobplotter import advanced_warning_signs as job_plotter_test
 
 
 """To do"""
@@ -14,15 +15,23 @@ from map1 import findmp as mplocator
 # Start making charts for visial representation of the data
 # Take the program from tkinter to html css + java
 "Find markerpost and put it on a folium map DONE"
+
+
 def open_map():
     new_window = tk.Toplevel(map)
 
-def roadlocation():
+
+def road_location():
     mplocator(My_Gui.mp_text.get(), My_Gui.bound_text.get(),
               My_Gui.area_text.get())
-    print(My_Gui.mp_text.get())
-    print(My_Gui.bound_text.get())
-    print(My_Gui.area_text.get())
+
+
+def job_plot():
+    # lat, lon, len + filename
+    lat, lon = My_Gui.coords_text.get().split(',')
+    map_name = selected_roadworks[1]
+    len = My_Gui.end_inkm_text.get()
+    job_plotter_test(lat, lon, len, map_name)
 
 
 def warning_text(item_name):
@@ -31,8 +40,8 @@ def warning_text(item_name):
     client = Client(account_sid, auth_token)
     message = client.messages \
                 .create(
-                    body=f'Your running low on {item_name}.',
-                    from_='', to='')
+                    body=f'Your running low on {item_name}'),
+                    #from='', to='')
 
 
 class GUI:
@@ -159,7 +168,6 @@ class GUI:
                                 messagebox.showwarning(warning_top[0], warning_message[0])
                                 # The next line is how the program will send texts to users
                                 # print("YOU NEED TO ADD IN YOUR OWN DETAILS line 19-20 for texts to work")
-                                # print("Also uncomment out line 153")
                                 # warning_text(row[1])
 
                             else:
@@ -192,7 +200,6 @@ class GUI:
                                     "|" , str(int(current_percent)), "%", "|"]
                             My_Gui.stocklistbox.insert(END, " ".join(info))
 
-
             @staticmethod
             def vehicle():
                 My_Gui.vehiclelistbox.delete(0, END)
@@ -217,7 +224,6 @@ class GUI:
                 My_Gui.assignedlistbox.delete(0, END)
                 for row in database.Search.assigned_kitlist(selected_roadworks[0]):
                     My_Gui.assignedlistbox.insert(END, row[5] + " " + row[3])
-
 
         class Delete(object):
             """Delete job, stock or vehicle."""
@@ -280,7 +286,6 @@ class GUI:
                                     My_Gui.jobtype_text.get(), My_Gui.crewrequired_text.get(),
                                     My_Gui.shift_type_text.get())
                 print(database.View.additional())
-
 
         class Update(object):
 
@@ -576,7 +581,7 @@ class GUI:
         self.area_dropdown.grid(row=3, column=26)
 
         self.findmp_button = Button(window, text="Search",
-                                    command=roadlocation)
+                                    command=road_location)
         self.findmp_button.grid(row=4, column=26)
 
         """Job plotter section"""
@@ -597,9 +602,9 @@ class GUI:
         self.end_inkm_entry = Entry(window, textvariable=self.end_inkm_text)
         self.end_inkm_entry.grid(row=8, column=26)
 
-        self.plot_button = Button(window, text='Add to map')
+        self.plot_button = Button(window, text='Add to map',
+                                            command=job_plot)
         self.plot_button.grid(row=9, column=26)
-
 
         """Add custom marker onto map"""
         self.edit_map_label = Label(window, text='Edit map')
